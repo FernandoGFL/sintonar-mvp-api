@@ -70,3 +70,11 @@ class User(AbstractUser):
     
     class Meta:
         db_table = 'users'
+
+
+class UserPhoto(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='user_photos')
+    
+    class Meta:
+        db_table = 'users_photos'
