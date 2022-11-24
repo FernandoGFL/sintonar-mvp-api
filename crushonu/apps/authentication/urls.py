@@ -6,7 +6,10 @@ from rest_framework_simplejwt.views import (
 )
 
 from crushonu.apps.authentication.serializers.authentication import JWTSerializer
-from crushonu.apps.authentication.views.authentication import UserRegisterViewSet
+from crushonu.apps.authentication.views.authentication import (
+    UserRegisterViewSet,
+    UserConfirmView
+)
 
 # JWT Auth
 urlpatterns = [
@@ -16,4 +19,6 @@ urlpatterns = [
          name='token_refresh'),
     path('register/',
          UserRegisterViewSet.as_view({'post': 'create'}), name='register_user'),
+    path('user-confirm/<uuid:uuid>/',
+         UserConfirmView.as_view(), name='user_confirm'),
 ]
