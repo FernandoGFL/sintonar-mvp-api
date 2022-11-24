@@ -43,7 +43,7 @@ class User(AbstractUser):
     WOMAN = 'W'
     OTHER = 'O'
 
-    GENRE = (
+    GENDER = (
         (MAN, 'Homem'),
         (WOMAN, 'Mulher'),
         (OTHER, 'Outro'),
@@ -61,13 +61,13 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField(unique=True)
-    genre = models.CharField(max_length=1, choices=GENRE)
+    gender = models.CharField(max_length=1, choices=GENDER)
     preference = models.CharField(max_length=1, choices=PREFERENCES)
     description = models.TextField(blank=True)
     is_confirmed = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['genre', 'preference']
+    REQUIRED_FIELDS = ['gender', 'preference']
 
     objects = UserManager()
 
