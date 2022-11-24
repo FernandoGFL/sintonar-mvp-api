@@ -6,6 +6,7 @@ API para a utilizar no jogo da CrushOnU
 - Postgres
 - Conta na AWS
 - Conta na Google
+- Redis
 
 ## Instalação
 - Clonar o repositório: ```git clone git@github.com:fernandogfleite/crushonu-api.git```
@@ -18,3 +19,4 @@ API para a utilizar no jogo da CrushOnU
 
 ## Rodar o projeto
 - Para rodar execute o seguinte comando: ```python manage.py runserver```
+- Para executar o celery execute o seguinte comando: ```celery -A crushonu worker -l INFO```
