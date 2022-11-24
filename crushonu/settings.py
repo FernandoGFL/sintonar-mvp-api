@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'crushonu.apps.crush.apps.CrushConfig',
     'rest_framework',
     'storages',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist'
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -174,3 +176,8 @@ AWS_S3_OBJECT_PARAMETERS = {
 
 DEFAULT_FILE_STORAGE = 'crushonu.storage_backends.MediaStorage'
 PRIVATE_FILE_STORAGE = 'crushonu.storage_backends.PrivateMediaStorage'
+
+SIMPLE_JWT = {
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True
+}
