@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
+import uuid
+
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
@@ -40,34 +42,35 @@ class User(AbstractUser):
     MAN = 'M'
     WOMAN = 'W'
     OTHER = 'O'
-    
+
     GENRE = (
         (MAN, 'Homem'),
         (WOMAN, 'Mulher'),
         (OTHER, 'Outro'),
     )
-    
+
     MAN = 'M'
     WOMAN = 'W'
     BOTH = 'B'
-    
+
     PREFERENCES = (
         (MAN, 'Homem'),
         (WOMAN, 'Mulher'),
         (BOTH, 'Ambos')
     )
-    
+
     username = None
     email = models.EmailField(unique=True)
     genre = models.CharField(max_length=1, choices=GENRE)
     preference = models.CharField(max_length=1, choices=PREFERENCES)
     description = models.TextField(blank=True)
-    
+    is_confirmed = models.BooleanField(default=False)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['genre', 'preference']
-    
+
     objects = UserManager()
-    
+
     class Meta:
         db_table = 'users'
 
@@ -75,6 +78,17 @@ class User(AbstractUser):
 class UserPhoto(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='user_photos')
-    
+
     class Meta:
         db_table = 'users_photos'
+
+
+class UserConfirm(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    identification_code = models.UUIDField(
+        editable=False, unique=True, default=uuid.uuid4)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'users_confirm'
