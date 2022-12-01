@@ -17,6 +17,7 @@ API para a utilizar no jogo da CrushOnU
 - Configurar a .env (use o arquivo .env-example como base)
 - Rodar as migrations: ```python manage.py migrate```
 
+
 ## Rodar o projeto
 - Para rodar execute o seguinte comando: ```python manage.py runserver```
 - Para executar o celery execute o seguinte comando: ```celery -A crushonu worker -l INFO```
