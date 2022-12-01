@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 import uuid
+from datetime import date
 
 
 class UserManager(BaseUserManager):
@@ -59,25 +60,35 @@ class User(AbstractUser):
         (BOTH, 'Ambos')
     )
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = None
     email = models.EmailField(unique=True)
+    birthday = models.DateField()
     gender = models.CharField(max_length=1, choices=GENDER)
     preference = models.CharField(max_length=1, choices=PREFERENCES)
     description = models.TextField(blank=True)
     is_confirmed = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['gender', 'preference']
+    REQUIRED_FIELDS = ['gender', 'preference', 'birthday']
 
     objects = UserManager()
 
     class Meta:
         db_table = 'users'
 
+    @property
+    def age(self):
+        return int((date.today() - self.birthday).days / 365.25)
+
+
+def model_directory_path(instance, filename):
+    return 'user_{0}/{1}'.format(instance.user.id, uuid.uuid4())
+
 
 class UserPhoto(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to='user_photos')
+    photo = models.ImageField(upload_to=model_directory_path)
 
     class Meta:
         db_table = 'users_photos'
