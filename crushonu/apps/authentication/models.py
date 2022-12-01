@@ -44,22 +44,22 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     MAN = 'M'
     WOMAN = 'W'
-    OTHER = 'O'
+    NEUTRAL = 'N'
 
     GENDER = (
-        (MAN, 'Homem'),
+        (MAN, 'Masculino'),
         (WOMAN, 'Mulher'),
-        (OTHER, 'Outro'),
+        (NEUTRAL, 'Neutro'),
     )
 
     MAN = 'M'
     WOMAN = 'W'
-    BOTH = 'B'
+    ALL = 'A'
 
     PREFERENCES = (
         (MAN, 'Homem'),
         (WOMAN, 'Mulher'),
-        (BOTH, 'Ambos')
+        (ALL, 'Todos')
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
