@@ -1,3 +1,5 @@
+from crushonu.storage_backends import PrivateMediaStorage
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
@@ -70,7 +72,8 @@ class User(AbstractUser):
     is_confirmed = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['gender', 'preference', 'birthday']
+    REQUIRED_FIELDS = ['gender', 'preference',
+                       'birthday', 'first_name', 'last_name']
 
     objects = UserManager()
 
@@ -81,14 +84,21 @@ class User(AbstractUser):
     def age(self):
         return int((date.today() - self.birthday).days / 365.25)
 
+    @property
+    def full_name(self):
+        return self.get_full_name()
+
 
 def model_directory_path(instance, filename):
-    return 'user_{0}/{1}'.format(instance.user.id, uuid.uuid4())
+    extension = filename.split('.')[-1]
+    return '{0}.{1}'.format(instance.id, extension)
 
 
 class UserPhoto(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to=model_directory_path)
+    photo = models.ImageField(
+        upload_to=model_directory_path, storage=PrivateMediaStorage())
 
     class Meta:
         db_table = 'users_photos'

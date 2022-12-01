@@ -30,6 +30,6 @@ urlpatterns = [
          'put': 'update', 'patch': 'partial_update'}), name='user_detail'),
     path('user/photos/', UserPhotoViewSet.as_view(
         {'post': 'create', 'get': 'list'}), name='user_photo_list'),
-    path('user/photos/<int:pk>/', UserPhotoViewSet.as_view(
+    path('user/photos/<uuid:pk>/', UserPhotoViewSet.as_view(
         {'get': 'retrieve', 'delete': 'destroy'}), name='user_photo_detail'),
 ]
