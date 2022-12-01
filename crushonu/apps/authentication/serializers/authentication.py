@@ -103,7 +103,9 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "description",
             "gender",
-            "preference"
+            "preference",
+            "full_name",
+            "age",
         )
         read_only_fields = (
             'id',
