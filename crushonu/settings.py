@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crushonu.apps.authentication.apps.AuthenticationConfig',
     'crushonu.apps.crush.apps.CrushConfig',
+    'crushonu.apps.utils.apps.UtilsConfig',
     'rest_framework',
     'storages',
     'rest_framework_simplejwt',
