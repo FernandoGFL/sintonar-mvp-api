@@ -28,13 +28,17 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     gender = CustomChoiceField(
         choices=User.GENDER,
         allow_blank=False,
-        allow_null=False
+        allow_null=False,
+        required=True,
     )
     preference = CustomChoiceField(
         choices=User.PREFERENCES,
         allow_blank=False,
-        allow_null=False
+        allow_null=False,
+        required=True,
     )
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
 
     class Meta:
         model = User
