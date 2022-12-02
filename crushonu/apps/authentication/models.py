@@ -47,9 +47,9 @@ class User(AbstractUser):
     NEUTRAL = 'N'
 
     GENDER = (
-        (MAN, 'Masculino'),
+        (MAN, 'Homem'),
         (WOMAN, 'Mulher'),
-        (NEUTRAL, 'Neutro'),
+        (NEUTRAL, 'Não-binário'),
     )
 
     MAN = 'M'
