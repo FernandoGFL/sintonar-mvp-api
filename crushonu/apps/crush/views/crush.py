@@ -4,7 +4,10 @@ from crushonu.apps.crush.serializers.crush import (
     CrushDisplaySerializer
 )
 from crushonu.apps.crush.models.crush import Crush
-from crushonu.apps.authentication.models import User
+from crushonu.apps.authentication.models import (
+    User,
+    UserPhoto
+)
 
 from rest_framework.mixins import (
     ListModelMixin,
@@ -33,8 +36,11 @@ class UserCrushViewSet(GenericViewSet,
     def get_queryset(self):
         queryset = super().get_queryset()
 
+        users_with_photos = UserPhoto.objects.values_list('user_id').distinct()
+
         query = Q(
             is_confirmed=True,
+            id__in=users_with_photos,
         )
 
         preference = self.request.user.preference
@@ -81,6 +87,12 @@ class CrushViewSet(GenericViewSet,
         ).order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
+        if not UserPhoto.objects.filter(user=request.user).exists():
+            return Response(
+                {"message": "Você precisa adicionar uma foto para participar do jogo."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         data = dict(**request.data)
         data['user_from'] = request.user.id
         serializer = self.get_serializer(data=data)
