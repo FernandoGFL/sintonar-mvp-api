@@ -1,7 +1,10 @@
+from crushonu.storage_backends import PrivateMediaStorage
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 import uuid
+from datetime import date
 
 
 class UserManager(BaseUserManager):
@@ -41,43 +44,61 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     MAN = 'M'
     WOMAN = 'W'
-    OTHER = 'O'
+    NEUTRAL = 'N'
 
     GENDER = (
         (MAN, 'Homem'),
         (WOMAN, 'Mulher'),
-        (OTHER, 'Outro'),
+        (NEUTRAL, 'Não-binário'),
     )
 
     MAN = 'M'
     WOMAN = 'W'
-    BOTH = 'B'
+    ALL = 'A'
 
     PREFERENCES = (
         (MAN, 'Homem'),
         (WOMAN, 'Mulher'),
-        (BOTH, 'Ambos')
+        (ALL, 'Todos')
     )
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = None
     email = models.EmailField(unique=True)
+    birthday = models.DateField()
     gender = models.CharField(max_length=1, choices=GENDER)
     preference = models.CharField(max_length=1, choices=PREFERENCES)
     description = models.TextField(blank=True)
     is_confirmed = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['gender', 'preference']
+    REQUIRED_FIELDS = ['gender', 'preference',
+                       'birthday', 'first_name', 'last_name']
 
     objects = UserManager()
 
     class Meta:
         db_table = 'users'
 
+    @property
+    def age(self):
+        return int((date.today() - self.birthday).days / 365.25)
+
+    @property
+    def full_name(self):
+        return self.get_full_name()
+
+
+def model_directory_path(instance, filename):
+    extension = filename.split('.')[-1]
+    return '{0}.{1}'.format(instance.id, extension)
+
 
 class UserPhoto(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to='user_photos')
+    photo = models.ImageField(
+        upload_to=model_directory_path, storage=PrivateMediaStorage())
 
     class Meta:
         db_table = 'users_photos'

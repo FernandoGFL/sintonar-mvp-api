@@ -41,10 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crushonu.apps.authentication.apps.AuthenticationConfig',
     'crushonu.apps.crush.apps.CrushConfig',
+    'crushonu.apps.utils.apps.UtilsConfig',
     'rest_framework',
     'storages',
     'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist'
+    'rest_framework_simplejwt.token_blacklist',
+    'django_rest_passwordreset',
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -169,7 +171,7 @@ AWS_DEFAULT_ACL = None
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_CUSTOM_DOMAIN = 's3-sa-east-1.amazonaws.com/%s' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_CUSTOM_DOMAIN = '%s.s3-sa-east-1.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }

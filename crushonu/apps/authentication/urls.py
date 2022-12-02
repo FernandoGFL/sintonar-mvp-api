@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -8,11 +8,16 @@ from rest_framework_simplejwt.views import (
 from crushonu.apps.authentication.serializers.authentication import JWTSerializer
 from crushonu.apps.authentication.views.authentication import (
     UserRegisterViewSet,
-    UserConfirmView
+    UserConfirmView,
+    UserResendConfirmView,
+    UserViewSet,
+    UserPhotoViewSet
 )
 
 # JWT Auth
 urlpatterns = [
+    path('password-reset/', include('django_rest_passwordreset.urls',
+         namespace='password_reset')),
     path('token/', TokenObtainPairView.as_view(serializer_class=JWTSerializer),
          name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(),
@@ -21,4 +26,12 @@ urlpatterns = [
          UserRegisterViewSet.as_view({'post': 'create'}), name='register_user'),
     path('user-confirm/<uuid:uuid>/',
          UserConfirmView.as_view(), name='user_confirm'),
+    path('user-resend-confirm/',  UserResendConfirmView.as_view(),
+         name='user_resend_confirm'),
+    path('user/', UserViewSet.as_view({'get': 'retrieve',
+                                       'put': 'update', 'patch': 'partial_update'}), name='user_detail'),
+    path('user/photos/', UserPhotoViewSet.as_view(
+        {'post': 'create', 'get': 'list'}), name='user_photo_list'),
+    path('user/photos/<uuid:pk>/', UserPhotoViewSet.as_view(
+        {'get': 'retrieve', 'delete': 'destroy'}), name='user_photo_detail'),
 ]
