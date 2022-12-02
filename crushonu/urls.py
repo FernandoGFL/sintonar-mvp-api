@@ -28,6 +28,7 @@ urlpatterns += [
         [
             path('authentication/', include('crushonu.apps.authentication.urls')),
             path('utils/', include('crushonu.apps.utils.urls')),
+            path('crush/', include('crushonu.apps.crush.urls')),
         ]
     )),
 ]
