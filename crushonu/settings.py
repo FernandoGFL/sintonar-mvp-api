@@ -14,6 +14,7 @@ import os
 from decouple import config
 from datetime import timedelta
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,8 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [
-                       s.strip() for s in v.split(', ')])
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -65,17 +65,28 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-X_FRAME_OPTIONS = 'SAMEORIGIN'
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8080',
-    'http://localhost:3000',
-    'http://localhost:8000',
-    'https://fernandogfleite.fun',
-    'https://www.fernandogfleite.fun',
-]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding',
-                      'content-type', 'accept', 'origin', 'authorization',)
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 
 ROOT_URLCONF = 'crushonu.urls'
