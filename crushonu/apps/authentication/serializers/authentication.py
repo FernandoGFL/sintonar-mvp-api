@@ -18,6 +18,7 @@ class JWTSerializer(TokenObtainPairSerializer):
             raise AuthenticationFailed(
                 "Esse usuário ainda não confirmou seu email",
                 "not_confirmed",
+                status_code=403
             )
 
         return data
@@ -78,7 +79,8 @@ class UserPhotoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         if self.context['request'].user.userphoto_set.count() >= 5:
-            raise serializers.ValidationError("Limite de fotos atingido")
+            raise serializers.ValidationError(
+                {"message": "Limite de fotos atingido"})
 
         return super().create(validated_data)
 
