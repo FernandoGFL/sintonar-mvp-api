@@ -11,7 +11,9 @@ from crushonu.apps.authentication.views.authentication import (
     UserConfirmView,
     UserResendConfirmView,
     UserViewSet,
-    UserPhotoViewSet
+    UserPhotoViewSet,
+    UserIsConfirmedView,
+    TemporaryDeleteUserView
 )
 
 # JWT Auth
@@ -34,4 +36,7 @@ urlpatterns = [
         {'post': 'create', 'get': 'list'}), name='user_photo_list'),
     path('user/photos/<uuid:pk>/', UserPhotoViewSet.as_view(
         {'get': 'retrieve', 'delete': 'destroy'}), name='user_photo_detail'),
+    path('user-is-confirmed/', UserIsConfirmedView.as_view(),
+         name='user_is_confirmed'),
+    path('user-delete/', TemporaryDeleteUserView.as_view(), name='user_delete')
 ]

@@ -156,3 +156,37 @@ class UserPhotoViewSet(ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class UserIsConfirmedView(APIView):
+    def get(self, request, format=None):
+        try:
+            user = User.objects.get(email=request.body.get("email"))
+
+        except User.DoesNotExist:
+            return Response(
+                {"message": "Usuário não encontrado."},
+            )
+
+        return Response(
+            {"is_confirmed": user.is_confirmed},
+            status=status.HTTP_200_OK
+        )
+
+
+class TemporaryDeleteUserView(APIView):
+    def delete(self, request, format=None):
+        try:
+            user = User.objects.get(email=request.data.get("email"))
+
+        except User.DoesNotExist:
+            return Response(
+                {"message": "Usuário não encontrado."},
+            )
+
+        user.delete()
+
+        return Response(
+            {"message": "Usuário deletado com sucesso."},
+            status=status.HTTP_204_NO_CONTENT
+        )
