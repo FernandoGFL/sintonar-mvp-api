@@ -161,7 +161,7 @@ class UserPhotoViewSet(ModelViewSet):
 class UserIsConfirmedView(APIView):
     def get(self, request, format=None):
         try:
-            user = User.objects.get(email=request.body.get("email"))
+            user = User.objects.get(email=request.query_params.get("email"))
 
         except User.DoesNotExist:
             return Response(
@@ -187,6 +187,5 @@ class TemporaryDeleteUserView(APIView):
         user.delete()
 
         return Response(
-            {"message": "Usuário deletado com sucesso."},
             status=status.HTTP_204_NO_CONTENT
         )
