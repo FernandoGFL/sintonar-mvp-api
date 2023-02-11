@@ -6,7 +6,7 @@ from crushonu.apps.authentication.models import (
 )
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import PermissionDenied
 from rest_framework import serializers
 
 
@@ -15,10 +15,9 @@ class JWTSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
 
         if not self.user.is_confirmed:
-            raise AuthenticationFailed(
+            raise PermissionDenied(
                 "Esse usuário ainda não confirmou seu email",
                 "not_confirmed",
-                status_code=403
             )
 
         return data
@@ -39,7 +38,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         required=True,
     )
     first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=False)
 
     class Meta:
         model = User
