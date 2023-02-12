@@ -70,6 +70,8 @@ class User(AbstractUser):
     preference = models.CharField(max_length=1, choices=PREFERENCES)
     description = models.TextField(blank=True)
     is_confirmed = models.BooleanField(default=False)
+    has_uploaded_photo = models.BooleanField(default=False)
+    has_description = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['gender', 'preference',
