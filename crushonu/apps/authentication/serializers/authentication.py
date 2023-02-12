@@ -5,6 +5,8 @@ from crushonu.apps.authentication.models import (
     UserPhoto
 )
 
+from django.db import transaction
+
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import serializers
@@ -19,6 +21,17 @@ class JWTSerializer(TokenObtainPairSerializer):
                 "Esse usuário ainda não confirmou seu email",
                 "not_confirmed",
             )
+
+        return data
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.update(
+            {
+                "has_description": self.user.has_description,
+                "has_uploaded_photo": self.user.has_uploaded_photo,
+            }
+        )
 
         return data
 
@@ -124,3 +137,10 @@ class UserSerializer(serializers.ModelSerializer):
             instance.userphoto_set.all(), many=True).data
 
         return data
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        if 'description' in validated_data and instance.has_description is False:
+            instance.has_description = True
+
+        return super().update(instance, validated_data)

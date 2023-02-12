@@ -10,6 +10,8 @@ from crushonu.apps.authentication.models import (
 )
 from crushonu.apps.authentication.signals import send_email_confirmation
 
+from django.db import transaction
+
 from rest_framework.mixins import (
     CreateModelMixin,
     RetrieveModelMixin,
@@ -151,8 +153,13 @@ class UserPhotoViewSet(ModelViewSet):
     def get_queryset(self):
         return UserPhoto.objects.filter(user=self.request.user)
 
+    @transaction.atomic
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+        if not self.request.user.has_uploaded_photo:
+            self.request.user.has_uploaded_photo = True
+            self.request.user.save()
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
