@@ -22,16 +22,8 @@ class JWTSerializer(TokenObtainPairSerializer):
                 "not_confirmed",
             )
 
-        return data
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data.update(
-            {
-                "has_description": self.user.has_description,
-                "has_uploaded_photo": self.user.has_uploaded_photo,
-            }
-        )
+        data['has_description'] = self.user.has_description
+        data['has_uploaded_photo'] = self.user.has_uploaded_photo
 
         return data
 
