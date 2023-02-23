@@ -151,7 +151,12 @@ class UserPhotoViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return UserPhoto.objects.filter(user=self.request.user)
+        return UserPhoto.objects.filter(
+            user=self.request.user
+        ).order_by(
+            "-is_favorite",
+            "updated_at"
+        )
 
     @transaction.atomic
     def perform_create(self, serializer):

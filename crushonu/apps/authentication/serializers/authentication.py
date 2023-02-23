@@ -78,7 +78,8 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         model = UserPhoto
         fields = (
             "id",
-            "photo",
+            "photos",
+            "is_favorite",
         )
 
     def create(self, validated_data):

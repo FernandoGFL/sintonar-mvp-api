@@ -72,6 +72,8 @@ class User(AbstractUser):
     is_confirmed = models.BooleanField(default=False)
     has_uploaded_photo = models.BooleanField(default=False)
     has_description = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['gender', 'preference',
@@ -99,8 +101,11 @@ def model_directory_path(instance, filename):
 class UserPhoto(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    photo = models.ImageField(
+    photos = models.ImageField(
         upload_to=model_directory_path, storage=PrivateMediaStorage())
+    is_favorite = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'users_photos'
