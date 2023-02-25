@@ -43,7 +43,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         required=True,
     )
     first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default=""
+    )
 
     class Meta:
         model = User

@@ -77,7 +77,7 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['gender', 'preference',
-                       'birthday', 'first_name', 'last_name']
+                       'birthday', 'first_name']
 
     objects = UserManager()
 
