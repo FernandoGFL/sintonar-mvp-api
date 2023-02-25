@@ -35,7 +35,7 @@ urlpatterns = [
     path('user/photos/', UserPhotoViewSet.as_view(
         {'post': 'create', 'get': 'list'}), name='user_photo_list'),
     path('user/photos/<uuid:pk>/', UserPhotoViewSet.as_view(
-        {'get': 'retrieve', 'delete': 'destroy'}), name='user_photo_detail'),
+        {'get': 'retrieve', 'delete': 'destroy', 'patch': 'partial_update'}), name='user_photo_detail'),
     path('user-is-confirmed/', UserIsConfirmedView.as_view(),
          name='user_is_confirmed'),
     path('user-delete/', TemporaryDeleteUserView.as_view(), name='user_delete')
