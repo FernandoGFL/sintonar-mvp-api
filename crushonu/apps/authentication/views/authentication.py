@@ -66,7 +66,7 @@ class UserConfirmView(APIView):
 
         except UserConfirm.DoesNotExist:
             return Response(
-                {"message": "Código de confirmação inválido."},
+                {"detail": "Código de confirmação inválido."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -82,7 +82,7 @@ class UserResendConfirmView(APIView):
 
         if not email:
             return Response(
-                {"message": "Email não informado."},
+                {"detail": "Email não informado."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -177,7 +177,7 @@ class UserIsConfirmedView(APIView):
 
         except User.DoesNotExist:
             return Response(
-                {"message": "Usuário não encontrado."},
+                {"detail": "Usuário não encontrado."},
             )
 
         return Response(
@@ -193,7 +193,7 @@ class TemporaryDeleteUserView(APIView):
 
         except User.DoesNotExist:
             return Response(
-                {"message": "Usuário não encontrado."},
+                {"detail": "Usuário não encontrado."},
             )
 
         user.delete()
