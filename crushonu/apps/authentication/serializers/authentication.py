@@ -74,7 +74,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         attrs = super().validate(attrs)
 
         if User.objects.filter(email=attrs['email']).exists():
-            raise serializers.ValidationError("Email já cadastrado")
+            raise serializers.ValidationError({"email": "Email já cadastrado"})
 
         return attrs
 
