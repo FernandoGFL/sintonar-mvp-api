@@ -70,11 +70,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         return user
 
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError("Email já cadastrado")
 
-        return value
+        return attrs
 
 
 class UserPhotoSerializer(serializers.ModelSerializer):
