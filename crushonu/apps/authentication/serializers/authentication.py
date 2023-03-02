@@ -82,13 +82,19 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserPhotoSerializer(serializers.ModelSerializer):
+    url = serializers.ImageField(source='photos', read_only=True)
+
     class Meta:
         model = UserPhoto
         fields = (
             "id",
             "photos",
+            "url",
             "is_favorite",
         )
+        extra_kwargs = {
+            "photos": {"write_only": True}
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
