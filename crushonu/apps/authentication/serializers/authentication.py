@@ -10,6 +10,7 @@ from django.db import transaction
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 
 class JWTSerializer(TokenObtainPairSerializer):
@@ -29,6 +30,15 @@ class JWTSerializer(TokenObtainPairSerializer):
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="Email já cadastrado"
+            )
+        ]
+    )
     password = serializers.CharField(write_only=True)
     gender = CustomChoiceField(
         choices=User.GENDER,
@@ -69,14 +79,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         UserConfirm.objects.create(user=user)
 
         return user
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-
-        if User.objects.filter(email=attrs['email']).exists():
-            raise serializers.ValidationError({"email": "Email já cadastrado"})
-
-        return attrs
 
 
 class UserPhotoSerializer(serializers.ModelSerializer):
