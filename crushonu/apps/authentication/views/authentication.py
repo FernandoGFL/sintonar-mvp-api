@@ -1,7 +1,8 @@
 from crushonu.apps.authentication.serializers.authentication import (
     UserRegisterSerializer,
     UserSerializer,
-    UserPhotoSerializer
+    UserPhotoSerializer,
+    UserChangePasswordSerializer
 )
 from crushonu.apps.authentication.models import (
     UserConfirm,
@@ -17,7 +18,10 @@ from rest_framework.mixins import (
     RetrieveModelMixin,
     UpdateModelMixin
 )
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import (
+    GenericAPIView,
+    UpdateAPIView
+)
 from rest_framework.viewsets import (
     GenericViewSet,
     ModelViewSet
@@ -201,3 +205,13 @@ class TemporaryDeleteUserView(APIView):
         return Response(
             status=status.HTTP_204_NO_CONTENT
         )
+
+
+class UserChangePasswordView(UpdateAPIView,
+                             UpdateModelMixin):
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserChangePasswordSerializer
+
+    def get_object(self):
+        return self.request.user

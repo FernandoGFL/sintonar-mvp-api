@@ -157,3 +157,25 @@ class UserSerializer(serializers.ModelSerializer):
             instance.has_description = True
 
         return super().update(instance, validated_data)
+
+
+class UserChangePasswordSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "password",
+            "new_password",
+        )
+
+    def update(self, instance, validated_data):
+        if not instance.check_password(validated_data['password']):
+            raise serializers.ValidationError(
+                {"detail": "Senha atual incorreta"})
+
+        instance.set_password(validated_data['new_password'])
+        instance.save()
+
+        return instance
