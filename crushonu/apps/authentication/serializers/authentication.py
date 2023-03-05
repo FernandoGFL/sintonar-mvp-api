@@ -109,6 +109,13 @@ class UserPhotoSerializer(serializers.ModelSerializer):
 
         return super().create(validated_data)
 
+    def update(self, instance, validated_data):
+        if validated_data.get('is_favorite', False):
+            UserPhoto.objects.filter(
+                user=instance.user).update(is_favorite=False)
+
+        return super().update(instance, validated_data)
+
 
 class UserSerializer(serializers.ModelSerializer):
     gender = CustomChoiceField(
