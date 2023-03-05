@@ -1,6 +1,7 @@
 from crushonu.apps.authentication.serializers.fields.user import UserField
 from crushonu.apps.authentication.serializers.authentication import UserPhotoSerializer
 from crushonu.apps.crush.models.crush import Crush
+from crushonu.apps.utils.serializers.fields import CustomChoiceField
 
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
@@ -72,6 +73,8 @@ class CrushCreateSerializer(serializers.ModelSerializer):
 
 
 class UserCrushDisplaySerializer(serializers.ModelSerializer):
+    gender = CustomChoiceField(choices=User.GENDER)
+
     class Meta:
         model = User
         fields = (
