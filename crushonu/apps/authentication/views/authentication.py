@@ -174,39 +174,6 @@ class UserPhotoViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class UserIsConfirmedView(APIView):
-    def get(self, request, format=None):
-        try:
-            user = User.objects.get(email=request.query_params.get("email"))
-
-        except User.DoesNotExist:
-            return Response(
-                {"detail": "Usuário não encontrado."},
-            )
-
-        return Response(
-            {"is_confirmed": user.is_confirmed},
-            status=status.HTTP_200_OK
-        )
-
-
-class TemporaryDeleteUserView(APIView):
-    def delete(self, request, format=None):
-        try:
-            user = User.objects.get(email=request.data.get("email"))
-
-        except User.DoesNotExist:
-            return Response(
-                {"detail": "Usuário não encontrado."},
-            )
-
-        user.delete()
-
-        return Response(
-            status=status.HTTP_204_NO_CONTENT
-        )
-
-
 class UserChangePasswordView(UpdateAPIView,
                              UpdateModelMixin):
     queryset = User.objects.all()
