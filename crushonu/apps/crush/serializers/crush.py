@@ -94,15 +94,13 @@ class UserCrushDisplaySerializer(serializers.ModelSerializer):
 
 
 class CrushDisplaySerializer(serializers.ModelSerializer):
-    user_from = UserCrushDisplaySerializer()
-    user_to = UserCrushDisplaySerializer()
+    user = UserCrushDisplaySerializer(source='user_from')
 
     class Meta:
         model = Crush
         fields = (
             'id',
-            'user_from',
-            'user_to',
+            'user',
             'match',
         )
 

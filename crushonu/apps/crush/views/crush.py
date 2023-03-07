@@ -71,6 +71,7 @@ class CrushViewSet(GenericViewSet,
     queryset = Crush.objects.all()
     serializer_class = CrushCreateSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -80,10 +81,22 @@ class CrushViewSet(GenericViewSet,
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        query_params = self.request.query_params
+
+        query = Q(
+            kiss=True,
+        )
+
+        matched = query_params.get('matched', 'false') in ('true', 'True',)
+
+        if matched:
+            query &= Q(match=True)
+        else:
+            query &= Q(match=False)
 
         return queryset.filter(
+            query,
             user_to=self.request.user,
-            kiss=True,
         ).order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
@@ -101,18 +114,3 @@ class CrushViewSet(GenericViewSet,
         headers = self.get_success_headers(serializer.data)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class CrushListSentKissesViewSet(GenericViewSet,
-                                 ListModelMixin):
-    queryset = Crush.objects.all()
-    serializer_class = CrushDisplaySerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-
-        return queryset.filter(
-            user_from=self.request.user,
-            kiss=True,
-        ).order_by('-created_at')
