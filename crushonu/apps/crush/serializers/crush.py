@@ -67,7 +67,7 @@ class CrushCreateSerializer(serializers.ModelSerializer):
         return crush
 
     def to_representation(self, instance):
-        serializer = CrushDisplaySerializer(instance)
+        serializer = CrushDisplaySerializer(instance, context=self.context)
 
         return serializer.data
 
