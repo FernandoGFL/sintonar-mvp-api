@@ -103,13 +103,3 @@ class CrushDisplaySerializer(serializers.ModelSerializer):
             'user',
             'match',
         )
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-
-        if instance.user_to == self.context['request'].user:
-            data['kissed'] = Crush.objects.filter(
-                user_from=instance.user_to, user_to=instance.user_from
-            ).exists()
-
-        return data
