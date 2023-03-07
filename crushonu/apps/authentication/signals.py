@@ -21,13 +21,13 @@ def delete_user_photo_file(sender, instance, **kwargs):
 def send_email_confirmation(sender, instance, created, **kwargs):
     if created:
         data = {
-            "name": instance.first_name,
+            "name": instance.user.first_name,
             "link": config('CONFIRM_EMAIL_URL') + f"?identification_code={instance.identification_code}",
         }
 
         task_send_email.delay(
             subject="Confirmação de email",
-            to=instance.email,
+            to=instance.user.email,
             template="authentication/email_confirmation.html",
             data=data
         )
