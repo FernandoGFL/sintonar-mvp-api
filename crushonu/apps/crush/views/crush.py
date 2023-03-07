@@ -101,3 +101,18 @@ class CrushViewSet(GenericViewSet,
         headers = self.get_success_headers(serializer.data)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class CrushListSentKissesViewSet(GenericViewSet,
+                                 ListModelMixin):
+    queryset = Crush.objects.all()
+    serializer_class = CrushDisplaySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        return queryset.filter(
+            user_from=self.request.user,
+            kiss=True,
+        ).order_by('-created_at')
