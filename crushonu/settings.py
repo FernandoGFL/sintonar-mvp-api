@@ -159,7 +159,7 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TEST_RUNNER = 'wsaude.test_runner.FastTestRunner'
+TEST_RUNNER = 'crushonu.test_runner.FastTestRunner'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
