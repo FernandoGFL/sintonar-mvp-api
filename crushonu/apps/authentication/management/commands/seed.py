@@ -14,7 +14,7 @@ def is_prime(n):
     elif n == 2:
         return True
     else:
-        for x in range(2, int(sqrt(n))):
+        for x in range(2, int(sqrt(n))+1):
             if n % x == 0:
                 return False
         return True
