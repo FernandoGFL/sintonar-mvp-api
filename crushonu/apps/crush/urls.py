@@ -8,8 +8,8 @@ from rest_framework.routers import DefaultRouter
 
 
 router = DefaultRouter()
-router.register('', CrushViewSet, basename='crush')
 router.register('users', UserCrushViewSet, basename='user_crush')
+router.register('', CrushViewSet, basename='crush')
 
 
 urlpatterns = [
