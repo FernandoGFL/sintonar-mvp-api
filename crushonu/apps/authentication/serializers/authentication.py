@@ -154,7 +154,9 @@ class UserSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['photos'] = UserPhotoSerializer(
-            instance.userphoto_set.all(), many=True).data
+            instance.userphoto_set.all().order_by('-is_favorite'),
+            many=True
+        ).data
 
         return data
 
