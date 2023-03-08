@@ -37,6 +37,7 @@ class CrushCreateSerializer(serializers.ModelSerializer):
 
         if crush:
             crush.kiss = kiss
+            crush.save()
 
         else:
             crush = Crush.objects.create(
@@ -45,21 +46,25 @@ class CrushCreateSerializer(serializers.ModelSerializer):
                 kiss=kiss,
             )
 
-        if kiss is True:
+        if crush.kiss:
             try:
-                crush_kissed = Crush.objects.get(
+                Crush.objects.filter(
                     user_to=user_from,
                     user_from=user_to,
                     kiss=True,
-                )
-                crush_kissed.match = True
-                crush_kissed.save()
+                ).update(match=True)
 
                 crush.match = True
 
             except Crush.DoesNotExist:
                 crush.match = False
         else:
+            Crush.objects.filter(
+                user_to=user_from,
+                user_from=user_to,
+                kiss=True,
+            ).update(match=False)
+
             crush.match = False
 
         crush.save()
