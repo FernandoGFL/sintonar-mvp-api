@@ -11,7 +11,8 @@ from crushonu.apps.authentication.models import (
 
 from rest_framework.mixins import (
     ListModelMixin,
-    CreateModelMixin
+    CreateModelMixin,
+    RetrieveModelMixin
 )
 from rest_framework.generics import (
     ListAPIView,
@@ -67,17 +68,18 @@ class UserCrushViewSet(GenericViewSet,
 
 class CrushViewSet(GenericViewSet,
                    ListModelMixin,
-                   CreateModelMixin):
+                   CreateModelMixin,
+                   RetrieveModelMixin):
     queryset = Crush.objects.all()
     serializer_class = CrushCreateSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = None
 
     def get_serializer_class(self):
-        if self.action == 'create':
-            return CrushCreateSerializer
-        elif self.action == 'list':
+        if self.action in ('list', 'retrieve'):
             return CrushDisplaySerializer
+
+        return self.serializer_class
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -85,18 +87,19 @@ class CrushViewSet(GenericViewSet,
 
         query = Q(
             kiss=True,
+            user_to=self.request.user
         )
 
-        matched = query_params.get('matched', 'false') in ('true', 'True',)
+        if self.action == 'list':
+            matched = query_params.get('matched', 'false') in ('true', 'True',)
 
-        if matched:
-            query &= Q(match=True)
-        else:
-            query &= Q(match=False)
+            if matched:
+                query &= Q(match=True)
+            else:
+                query &= Q(match=False)
 
         return queryset.filter(
             query,
-            user_to=self.request.user,
         ).order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
