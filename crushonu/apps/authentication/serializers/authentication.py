@@ -144,11 +144,15 @@ class UserSerializer(serializers.ModelSerializer):
             "preference",
             "full_name",
             "age",
+            "has_description",
+            "has_uploaded_photo",
         )
         read_only_fields = (
             'id',
             'email',
-            'photos'
+            'photos',
+            'has_description',
+            'has_uploaded_photo',
         )
 
     def to_representation(self, instance):
