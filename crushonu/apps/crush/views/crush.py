@@ -85,9 +85,12 @@ class CrushViewSet(GenericViewSet,
         queryset = super().get_queryset()
         query_params = self.request.query_params
 
+        users_with_photos = UserPhoto.objects.values_list('user_id').distinct()
+
         query = Q(
             kiss=True,
-            user_to=self.request.user
+            user_to=self.request.user,
+            user_from__id__in=users_with_photos,
         )
 
         if self.action == 'list':
