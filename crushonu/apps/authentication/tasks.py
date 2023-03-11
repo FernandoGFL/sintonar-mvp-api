@@ -1,5 +1,6 @@
 from django.core import mail
 from django.template.loader import render_to_string
+from django.core import management
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -29,5 +30,16 @@ def task_send_email(subject, to, template, data):
     conexao.close()
 
     logger.info("Email sent")
+
+    return True
+
+
+@shared_task(name="backup_database")
+def backup_database():
+    logger.info("Backing up database...")
+
+    management.call_command("dbbackup")
+
+    logger.info("Database backed up")
 
     return True
