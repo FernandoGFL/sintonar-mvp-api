@@ -102,6 +102,14 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         if self.instance:
             self.fields['photos'].read_only = True
 
+    def validate_is_favorite(self, value):
+        if value is False and UserPhoto.objects.filter(
+            user=self.context['request'].user
+        ).exists() is False:
+            value = True
+
+        return value
+
     def create(self, validated_data):
         if self.context['request'].user.userphoto_set.count() >= 5:
             raise serializers.ValidationError(
