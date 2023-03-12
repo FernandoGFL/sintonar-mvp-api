@@ -43,6 +43,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     task_send_email.delay(
         subject="Recuperação de senha",
         to=reset_password_token.user.email,
-        template="authentication/email_confirmation.html",
+        template="authentication/reset_password.html",
         data=data
     )
