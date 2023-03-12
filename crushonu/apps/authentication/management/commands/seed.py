@@ -65,7 +65,7 @@ class Command(BaseCommand):
             user.set_password('123456')
             user.save()
 
-            user_photo = UserPhoto(user=user)
+            user_photo = UserPhoto(user=user, is_favorite=True)
 
             if user.gender == User.MAN:
                 mens += 1
