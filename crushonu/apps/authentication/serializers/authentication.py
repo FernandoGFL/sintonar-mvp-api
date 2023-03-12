@@ -111,7 +111,7 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        if self.context['request'].user.userphoto_set.count() >= 5:
+        if self.context['request'].user.userphoto_set.count() >= 3:
             raise serializers.ValidationError(
                 {"detail": "Limite de fotos atingido"})
 
