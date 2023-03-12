@@ -33,8 +33,6 @@ ALLOWED_HOSTS = config(
     cast=lambda v: [s.strip() for s in v.split(', ')]
 )
 
-print(ALLOWED_HOSTS)
-
 CSRF_TRUSTED_ORIGINS = ['https://api.fernandogfleite.fun']
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
