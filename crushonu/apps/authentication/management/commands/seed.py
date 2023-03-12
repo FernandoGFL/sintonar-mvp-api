@@ -28,7 +28,7 @@ class Command(BaseCommand):
         users = list()
         fake = Faker()
 
-        for i in range(1, 30):
+        for i in range(1, 31):
             gender = User.MAN
             preference = User.ALL
 
@@ -57,13 +57,13 @@ class Command(BaseCommand):
 
         User.objects.bulk_create(users)
 
+        mens = 0
+        womens = 0
+        neutrals = 0
+
         for i, user in enumerate(User.objects.all(), start=1):
             user.set_password('123456')
             user.save()
-
-            mens = 0
-            womens = 0
-            neutrals = 0
 
             user_photo = UserPhoto(user=user)
 
@@ -98,6 +98,7 @@ class Command(BaseCommand):
                         choice, (i % 7)+1),
                     'rb'
                 )
+
                 image = File(file)
                 user_photo.photos.save(
                     'photo-{}.jpg'.format((i % 7)+1), image)
