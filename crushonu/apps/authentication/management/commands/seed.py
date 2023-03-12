@@ -26,17 +26,20 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **kwargs):
         users = list()
-        fake = Faker()
+        fake = Faker(['pt_BR'])
 
         for i in range(1, 31):
+            first_name = fake.first_name_male()
             gender = User.MAN
             preference = User.ALL
 
             if i % 2 == 0:
+                first_name = fake.first_name_female()
                 gender = User.WOMAN
                 preference = User.MAN
 
             elif is_prime(i):
+                first_name = fake.first_name()
                 gender = User.NEUTRAL
                 preference = User.WOMAN
 
@@ -46,7 +49,7 @@ class Command(BaseCommand):
                     birthday=date(1990, 1, 1),
                     gender=gender,
                     preference=preference,
-                    first_name=fake.first_name(),
+                    first_name=first_name,
                     last_name=fake.last_name(),
                     description=fake.text(100),
                     is_confirmed=True,
