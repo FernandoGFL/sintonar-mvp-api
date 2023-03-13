@@ -151,15 +151,15 @@ class UserPhotoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"detail": "Limite de fotos atingido"})
 
-        photo = resize_image(validated_data['photos'])
+        # photo = resize_image(validated_data['photos'])
 
-        user_photo = UserPhoto.objects.create(
-            user=self.context['request'].user,
-            photos=photo,
-            is_favorite=validated_data.get('is_favorite', False)
-        )
+        # user_photo = UserPhoto.objects.create(
+        #     user=self.context['request'].user,
+        #     photos=validated_data['photos'],
+        #     is_favorite=validated_data.get('is_favorite', False)
+        # )
 
-        return user_photo
+        return super().create(validated_data)
 
     def update(self, instance, validated_data):
         if validated_data.get('is_favorite', False):
