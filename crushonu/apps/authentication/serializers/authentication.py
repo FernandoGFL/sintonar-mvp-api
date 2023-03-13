@@ -26,6 +26,7 @@ def resize_image(image):
 
     # Carrega a imagem com o PIL
     img = Image.open(image)
+    img.convert('RGB')
 
     # Redimensiona a imagem
     img.thumbnail((640, 800))
