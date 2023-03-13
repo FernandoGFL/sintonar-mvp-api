@@ -18,28 +18,23 @@ from io import BytesIO
 
 
 def resize_image(image):
-    # Pega a extensão do arquivo
-    extension = image.name.split('.')[-1].upper()
-
-    if extension == 'JPG':
-        extension = 'JPEG'
-
     # Carrega a imagem com o PIL
     img = Image.open(image)
-    img.convert('RGB')
+    if img.mode == 'RGBA':
+        img.convert('RGB')
 
     # Redimensiona a imagem
     img.thumbnail((640, 800))
 
     # Comprime a imagem
     img_io = BytesIO()
-    img.save(img_io, format=extension, optimize=True, quality=60)
+    img.save(img_io, format='JPEG', optimize=True, quality=60)
     img_io.seek(0)
 
     file_name = image.name
 
     resized_file = InMemoryUploadedFile(
-        img_io, None, file_name, f'image/{file_name.split(".")[-1]}',
+        img_io, None, file_name, 'image/jpeg',
         img_io.tell, None
     )
 
