@@ -28,7 +28,7 @@ class Command(BaseCommand):
         users = list()
         fake = Faker(['pt_BR'])
 
-        for i in range(31, 33):
+        for i in range(1, 31):
             first_name = fake.first_name_male()
             gender = User.MAN
             preference = User.ALL
