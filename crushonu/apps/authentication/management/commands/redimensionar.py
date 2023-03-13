@@ -9,22 +9,18 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 def resize_image(image):
-    # Pega a extensão do arquivo
-    extension = image.name.split('.')[-1].upper()
-
-    if extension == 'JPG':
-        extension = 'JPEG'
-
     # Carrega a imagem com o PIL
     img = Image.open(image)
-    img.convert('RGB')
+
+    if img.mode == 'RGBA':
+        img.convert('RGB')
 
     # Redimensiona a imagem
     img.thumbnail((640, 800))
 
     # Comprime a imagem
     img_io = BytesIO()
-    img.save(img_io, format=extension, optimize=True, quality=60)
+    img.save(img_io, format='JPEG', optimize=True, quality=60)
     img_io.seek(0)
 
     return img_io
@@ -36,10 +32,10 @@ def save_image(user_photo, file):
     resized_file = resize_image(file)
 
     # Cria um objeto InMemoryUploadedFile a partir do arquivo redimensionado e comprimido
-    file_name = file.name
+    file_name = file.name.split('.')[0] + '.jpg'
     file_content = ContentFile(resized_file.read())
     resized_file = InMemoryUploadedFile(
-        file_content, None, file_name, f'image/{file_name.split(".")[-1]}',
+        file_content, None, file_name, 'image/jpeg',
         file_content.tell, None
     )
 
