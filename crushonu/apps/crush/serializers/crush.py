@@ -47,17 +47,19 @@ class CrushCreateSerializer(serializers.ModelSerializer):
             )
 
         if crush.kiss:
-            try:
-                Crush.objects.filter(
-                    user_to=user_from,
-                    user_from=user_to,
-                    kiss=True,
-                ).update(match=True)
+            crush = Crush.objects.filter(
+                user_to=user_from,
+                user_from=user_to,
+                kiss=True,
+            )
+
+            if crush.exists():
+                crush.update(match=True)
 
                 crush.match = True
-
-            except Crush.DoesNotExist:
+            else:
                 crush.match = False
+
         else:
             Crush.objects.filter(
                 user_to=user_from,
