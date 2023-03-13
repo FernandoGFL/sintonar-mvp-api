@@ -68,12 +68,12 @@ class Command(BaseCommand):
             user.set_password('123456')
             user.save()
 
-            user_photo = UserPhoto(user=user, is_favorite=True)
-
             if user.gender == User.MAN:
                 mens_photo += 1
                 print(user.email)
                 for c in range(0, 3):
+                    user_photo = UserPhoto(
+                        user=user, is_favorite=True if c == 0 else False)
                     print('crushonu/apps/authentication/management/photos/homem/photo-{}.jpg'.format(
                         ((mens_photo+c) % 7)+1))
                     file = open(
@@ -90,6 +90,8 @@ class Command(BaseCommand):
                 womens_photos += 1
                 print(user.email)
                 for c in range(0, 3):
+                    user_photo = UserPhoto(
+                        user=user, is_favorite=True if c == 0 else False)
                     print('crushonu/apps/authentication/management/photos/mulher/photo-{}.jpg'.format(
                         ((womens_photos+c) % 7)+1))
                     file = open(
@@ -106,6 +108,8 @@ class Command(BaseCommand):
                 neutrals_photos += 1
                 print(user.email)
                 for c in range(0, 3):
+                    user_photo = UserPhoto(
+                        user=user, is_favorite=True if c == 0 else False)
                     choice = 'homem' if neutrals_photos % 2 == 0 else 'mulher'
                     print('crushonu/apps/authentication/management/photos/{}/photo-{}.jpg'.format(
                         choice, ((neutrals_photos+c) % 7)+1))
