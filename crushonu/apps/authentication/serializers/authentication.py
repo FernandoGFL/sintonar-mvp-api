@@ -6,11 +6,43 @@ from crushonu.apps.authentication.models import (
 )
 
 from django.db import transaction
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+
+from PIL import Image
+from io import BytesIO
+
+
+def resize_image(image):
+    # Pega a extensão do arquivo
+    extension = image.name.split('.')[-1].upper()
+
+    if extension == 'JPG':
+        extension = 'JPEG'
+
+    # Carrega a imagem com o PIL
+    img = Image.open(image)
+
+    # Redimensiona a imagem
+    img.thumbnail((640, 800))
+
+    # Comprime a imagem
+    img_io = BytesIO()
+    img.save(img_io, format=extension, optimize=True, quality=60)
+    img_io.seek(0)
+
+    file_name = image.name
+
+    resized_file = InMemoryUploadedFile(
+        img_io, None, file_name, f'image/{file_name.split(".")[-1]}',
+        img_io.tell, None
+    )
+
+    return resized_file
 
 
 class JWTSerializer(TokenObtainPairSerializer):
@@ -115,7 +147,15 @@ class UserPhotoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"detail": "Limite de fotos atingido"})
 
-        return super().create(validated_data)
+        photo = resize_image(validated_data['photos'])
+
+        user_photo = UserPhoto.objects.create(
+            user=self.context['request'].user,
+            photos=photo,
+            is_favorite=validated_data.get('is_favorite', False)
+        )
+
+        return user_photo
 
     def update(self, instance, validated_data):
         if validated_data.get('is_favorite', False):
