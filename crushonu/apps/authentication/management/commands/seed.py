@@ -28,7 +28,7 @@ class Command(BaseCommand):
         users = list()
         fake = Faker(['pt_BR'])
 
-        for i in range(1, 31):
+        for i in range(31, 33):
             first_name = fake.first_name_male()
             gender = User.MAN
             preference = User.ALL
@@ -60,9 +60,9 @@ class Command(BaseCommand):
 
         User.objects.bulk_create(users)
 
-        mens = 0
-        womens = 0
-        neutrals = 0
+        mens_photo = 0
+        womens_photos = 0
+        neutrals_photos = 0
 
         for i, user in enumerate(User.objects.all(), start=1):
             user.set_password('123456')
@@ -71,38 +71,42 @@ class Command(BaseCommand):
             user_photo = UserPhoto(user=user, is_favorite=True)
 
             if user.gender == User.MAN:
-                mens += 1
-                file = open(
-                    'crushonu/apps/authentication/management/photos/homem/photo-{}.jpg'.format(
-                        (mens % 7)+1),
-                    'rb'
-                )
-                image = File(file)
-                user_photo.photos.save(
-                    'photo-{}.jpg'.format((i % 7)+1), image)
-                user_photo.save()
+                for c in range(1, 3):
+                    mens_photo += 1
+                    file = open(
+                        'crushonu/apps/authentication/management/photos/homem/photo-{}.jpg'.format(
+                            (mens_photo % 7)+1),
+                        'rb'
+                    )
+                    image = File(file)
+                    user_photo.photos.save(
+                        'photo-{}.jpg'.format(((i+c) % 7)+1), image)
+                    user_photo.save()
 
             elif user.gender == User.WOMAN:
-                womens += 1
-                file = open(
-                    'crushonu/apps/authentication/management/photos/mulher/photo-{}.jpg'.format(
-                        (womens % 7)+1),
-                    'rb'
-                )
-                image = File(file)
-                user_photo.photos.save(
-                    'photo-{}.jpg'.format((i % 7)+1), image)
-                user_photo.save()
-            else:
-                neutrals += 1
-                choice = 'homem' if neutrals % 2 == 0 else 'mulher'
-                file = open(
-                    'crushonu/apps/authentication/management/photos/{}/photo-{}.jpg'.format(
-                        choice, (i % 7)+1),
-                    'rb'
-                )
+                for c in range(1, 3):
+                    womens_photos += 1
+                    file = open(
+                        'crushonu/apps/authentication/management/photos/mulher/photo-{}.jpg'.format(
+                            (womens_photos % 7)+1),
+                        'rb'
+                    )
+                    image = File(file)
+                    user_photo.photos.save(
+                        'photo-{}.jpg'.format(((i+c) % 7)+1), image)
+                    user_photo.save()
 
-                image = File(file)
-                user_photo.photos.save(
-                    'photo-{}.jpg'.format((i % 7)+1), image)
-                user_photo.save()
+            else:
+                for c in range(1, 3):
+                    neutrals_photos += 1
+                    choice = 'homem' if neutrals_photos % 2 == 0 else 'mulher'
+                    file = open(
+                        'crushonu/apps/authentication/management/photos/{}/photo-{}.jpg'.format(
+                            choice, (neutrals_photos % 7)+1),
+                        'rb'
+                    )
+
+                    image = File(file)
+                    user_photo.photos.save(
+                        'photo-{}.jpg'.format(((c+i) % 7)+1), image)
+                    user_photo.save()
