@@ -26,19 +26,15 @@ def resize_image(image):
     # Redimensiona a imagem
     img.thumbnail((640, 800))
 
+    file_name = image.name.split('.')[0] + '.jpg'
+
     # Comprime a imagem
     img_io = BytesIO()
     img.save(img_io, format='JPEG', optimize=True, quality=60)
-    img_io.seek(0)
+    img_file = InMemoryUploadedFile(
+        img_io, None, file_name, 'image/jpeg', img_io.getbuffer().nbytes, None)
 
-    file_name = image.name
-
-    resized_file = InMemoryUploadedFile(
-        img_io, None, file_name, 'image/jpeg',
-        img_io.tell, None
-    )
-
-    return resized_file
+    return img_file
 
 
 class JWTSerializer(TokenObtainPairSerializer):
