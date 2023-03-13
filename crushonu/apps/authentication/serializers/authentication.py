@@ -142,6 +142,14 @@ class UserPhotoSerializer(serializers.ModelSerializer):
 
         return value
 
+    def validate(self, attrs):
+        # Verificar se a imagem tem mais de 10MB
+        if attrs['photos'].size > 1024 * 1024 * 10:
+            raise serializers.ValidationError(
+                {"detail": "A imagem não pode ter mais de 10MB"})
+
+        return super().validate(attrs)
+
     def create(self, validated_data):
         if self.context['request'].user.userphoto_set.count() >= 3:
             raise serializers.ValidationError(
