@@ -20,8 +20,7 @@ from io import BytesIO
 def resize_image(image):
     # Carrega a imagem com o PIL
     img = Image.open(image)
-    print(img.mode)
-    img.convert('RGB')
+    img = img.convert('RGB')
 
     # Redimensiona a imagem
     img.thumbnail((640, 800))
@@ -30,7 +29,7 @@ def resize_image(image):
 
     # Comprime a imagem
     img_io = BytesIO()
-    img.save(img_io, format='JPEG', quality=60, mode='RGB')
+    img.save(img_io, format='JPEG', quality=60)
     img_file = InMemoryUploadedFile(
         img_io, None, file_name, 'image/jpeg', img_io.getbuffer().nbytes, None)
 
