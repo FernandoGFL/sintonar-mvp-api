@@ -4,7 +4,7 @@ from rest_framework.serializers import (
 )
 
 from django.contrib.auth import get_user_model
-
+from django.utils.translation import ugettext_lazy as _
 
 User = get_user_model()
 
@@ -23,5 +23,5 @@ class UserField(RelatedField):
             )
         except User.DoesNotExist:
             raise ValidationError(
-                f'Pk inválido \"{data}\" - objeto não existe.'
+                _(f'Invalid pk \"{data}\" - object does not exist.')
             )

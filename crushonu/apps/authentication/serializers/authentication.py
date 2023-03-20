@@ -4,36 +4,15 @@ from crushonu.apps.authentication.models import (
     UserConfirm,
     UserPhoto
 )
+from crushonu.apps.utils.image import resize_image
 
 from django.db import transaction
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-
-from PIL import Image
-from io import BytesIO
-
-
-def resize_image(image):
-    # Carrega a imagem com o PIL
-    img = Image.open(image)
-    img = img.convert('RGB')
-
-    # Redimensiona a imagem
-    img.thumbnail((640, 800))
-
-    file_name = image.name.split('.')[0] + '.jpg'
-
-    # Comprime a imagem
-    img_io = BytesIO()
-    img.save(img_io, format='JPEG', quality=75)
-    img_file = InMemoryUploadedFile(
-        img_io, None, file_name, 'image/jpeg', img_io.getbuffer().nbytes, None)
-
-    return img_file
 
 
 class JWTSerializer(TokenObtainPairSerializer):
@@ -42,7 +21,7 @@ class JWTSerializer(TokenObtainPairSerializer):
 
         if not self.user.is_confirmed:
             raise PermissionDenied(
-                "Esse usuário ainda não confirmou seu email",
+                _("This user is not confirmed."),
                 "not_confirmed",
             )
 
@@ -58,7 +37,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         validators=[
             UniqueValidator(
                 queryset=User.objects.all(),
-                message="Email já cadastrado"
+                message=_("Invalid email - user already exists.")
             )
         ]
     )
@@ -94,7 +73,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             "preference",
         )
 
-    def create(self, validated_data):
+    def create(self, validated_data) -> User:
         user = User.objects.create_user(
             **validated_data,
         )
@@ -122,10 +101,12 @@ class UserPhotoSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # If the user has photo, the photos field must be read only
         if self.instance:
             self.fields['photos'].read_only = True
 
-    def validate_is_favorite(self, value):
+    def validate_is_favorite(self, value: bool) -> bool:
+        # If the user not has photo, the is_favorite must be True
         if value is False and UserPhoto.objects.filter(
             user=self.context['request'].user
         ).exists() is False:
@@ -134,18 +115,24 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
-        # Verificar se a imagem tem mais de 10MB
+        # If has photo, check if the size is less than 10MB
         if attrs.get('photos', None):
             if attrs['photos'].size > 1024 * 1024 * 10:
                 raise serializers.ValidationError(
-                    {"detail": "A imagem não pode ter mais de 10MB"})
+                    {
+                        "photos": _("Image size must be less than 10MB")
+                    }
+                )
 
         return super().validate(attrs)
 
-    def create(self, validated_data):
+    def create(self, validated_data) -> UserPhoto:
         if self.context['request'].user.userphoto_set.count() >= 3:
             raise serializers.ValidationError(
-                {"detail": "Limite de fotos atingido"})
+                {
+                    "detail": _("You can't upload more than 3 photos.")
+                }
+            )
 
         photo = resize_image(validated_data['photos'])
 
@@ -157,10 +144,13 @@ class UserPhotoSerializer(serializers.ModelSerializer):
 
         return user_photo
 
-    def update(self, instance, validated_data):
+    def update(self, instance, validated_data) -> UserPhoto:
         if validated_data.get('is_favorite', False):
             UserPhoto.objects.filter(
-                user=instance.user).update(is_favorite=False)
+                user=instance.user
+            ).update(
+                is_favorite=False
+            )
 
         return super().update(instance, validated_data)
 
@@ -203,7 +193,7 @@ class UserSerializer(serializers.ModelSerializer):
             'has_uploaded_photo',
         )
 
-    def to_representation(self, instance):
+    def to_representation(self, instance) -> dict:
         data = super().to_representation(instance)
         data['photos'] = UserPhotoSerializer(
             instance.userphoto_set.all().order_by('-is_favorite'),
@@ -213,7 +203,7 @@ class UserSerializer(serializers.ModelSerializer):
         return data
 
     @transaction.atomic
-    def update(self, instance, validated_data):
+    def update(self, instance, validated_data) -> User:
         if 'description' in validated_data and instance.has_description is False:
             instance.has_description = True
 
@@ -231,10 +221,13 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
             "new_password",
         )
 
-    def update(self, instance, validated_data):
+    def update(self, instance, validated_data) -> User:
         if not instance.check_password(validated_data['password']):
             raise serializers.ValidationError(
-                {"detail": "Senha atual incorreta"})
+                {
+                    "password": _("Incorrect password.")
+                }
+            )
 
         instance.set_password(validated_data['new_password'])
         instance.save()

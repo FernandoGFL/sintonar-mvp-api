@@ -12,6 +12,7 @@ from crushonu.apps.authentication.models import (
 from crushonu.apps.authentication.signals import send_email_confirmation
 
 from django.db import transaction
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -42,7 +43,7 @@ class UserRegisterViewSet(CreateModelMixin, GenericViewSet):
         headers = self.get_success_headers(serializer.data)
 
         data = {
-            "message": "Usuário criado com sucesso, verifique seu email para confirmar sua conta.",
+            "message": _("User created successfully. Check your email to confirm your account."),
         }
 
         return Response(
@@ -61,7 +62,9 @@ class UserConfirmView(APIView):
 
             if user.is_confirmed:
                 return Response(
-                    {"message": "Usuário já confirmado."},
+                    {
+                        "message": _("User already confirmed.")
+                    },
                     status=status.HTTP_200_OK,
                 )
 
@@ -70,12 +73,16 @@ class UserConfirmView(APIView):
 
         except UserConfirm.DoesNotExist:
             return Response(
-                {"detail": "Código de confirmação inválido."},
+                {
+                    "detail": _("Invalid confirmation code.")
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         return Response(
-            {"message": "Usuário confirmado com sucesso."},
+            {
+                "message": _("User confirmed successfully.")
+            },
             status=status.HTTP_200_OK
         )
 
@@ -86,7 +93,9 @@ class UserResendConfirmView(APIView):
 
         if not email:
             return Response(
-                {"detail": "Email não informado."},
+                {
+                    "detail": _("Email is required.")
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -95,7 +104,9 @@ class UserResendConfirmView(APIView):
 
             if user.is_confirmed:
                 return Response(
-                    {"message": "Usuário já confirmado."},
+                    {
+                        "message": _("User already confirmed.")
+                    },
                     status=status.HTTP_200_OK,
                 )
 
@@ -110,7 +121,9 @@ class UserResendConfirmView(APIView):
             pass
 
         return Response(
-            {"message": "Email de confirmação reenviado com sucesso."},
+            {
+                "message": _("Confirmation email sent successfully.")
+            },
             status=status.HTTP_200_OK
         )
 
@@ -123,36 +136,13 @@ class UserViewSet(
 ):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user
-
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
+    permission_classes = (IsAuthenticated,)
 
 
 class UserPhotoViewSet(ModelViewSet):
     queryset = UserPhoto.objects.all()
     serializer_class = UserPhotoSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return UserPhoto.objects.filter(
@@ -177,7 +167,7 @@ class UserPhotoViewSet(ModelViewSet):
 class UserChangePasswordView(UpdateAPIView,
                              UpdateModelMixin):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserChangePasswordSerializer
 
     def get_object(self):

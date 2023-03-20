@@ -1,9 +1,14 @@
+from crushonu.apps.authentication.models import (
+    User,
+    UserPhoto
+)
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from crushonu.apps.authentication.models import User, UserPhoto
-
 from django.core.files import File
+
 from faker import Faker
+
 from datetime import date
 from math import sqrt
 
@@ -70,49 +75,59 @@ class Command(BaseCommand):
 
             if user.gender == User.MAN:
                 mens_photo += 1
-                print(user.email)
                 for c in range(0, 3):
                     user_photo = UserPhoto(
-                        user=user, is_favorite=True if c == 0 else False)
-                    print('crushonu/apps/authentication/management/photos/homem/photo-{}.jpg'.format(
-                        ((mens_photo+c) % 7)+1))
+                        user=user,
+                        is_favorite=True if c == 0 else False
+                    )
+
                     file = open(
-                        'crushonu/apps/authentication/management/photos/homem/photo-{}.jpg'.format(
+                        'crushonu/apps/authentication/management/photos/man/photo-{}.jpg'.format(
                             ((mens_photo+c) % 7)+1),
                         'rb'
                     )
                     image = File(file)
+
                     user_photo.photos.save(
-                        'photo-{}.jpg'.format(((i+c) % 7)+1), image)
+                        'photo-{}.jpg'.format(((i+c) % 7)+1),
+                        image
+                    )
                     user_photo.save()
+
+                    file.close()
 
             elif user.gender == User.WOMAN:
                 womens_photos += 1
-                print(user.email)
                 for c in range(0, 3):
                     user_photo = UserPhoto(
-                        user=user, is_favorite=True if c == 0 else False)
-                    print('crushonu/apps/authentication/management/photos/mulher/photo-{}.jpg'.format(
-                        ((womens_photos+c) % 7)+1))
+                        user=user,
+                        is_favorite=True if c == 0 else False
+                    )
+
                     file = open(
-                        'crushonu/apps/authentication/management/photos/mulher/photo-{}.jpg'.format(
+                        'crushonu/apps/authentication/management/photos/woman/photo-{}.jpg'.format(
                             ((womens_photos+c) % 7)+1),
                         'rb'
                     )
                     image = File(file)
+
                     user_photo.photos.save(
-                        'photo-{}.jpg'.format(((i+c) % 7)+1), image)
+                        'photo-{}.jpg'.format(((i+c) % 7)+1),
+                        image
+                    )
                     user_photo.save()
+
+                    file.close()
 
             else:
                 neutrals_photos += 1
-                print(user.email)
                 for c in range(0, 3):
                     user_photo = UserPhoto(
-                        user=user, is_favorite=True if c == 0 else False)
-                    choice = 'homem' if neutrals_photos % 2 == 0 else 'mulher'
-                    print('crushonu/apps/authentication/management/photos/{}/photo-{}.jpg'.format(
-                        choice, ((neutrals_photos+c) % 7)+1))
+                        user=user,
+                        is_favorite=True if c == 0 else False
+                    )
+
+                    choice = 'man' if neutrals_photos % 2 == 0 else 'woman'
                     file = open(
                         'crushonu/apps/authentication/management/photos/{}/photo-{}.jpg'.format(
                             choice, ((neutrals_photos+c) % 7)+1),
@@ -120,8 +135,13 @@ class Command(BaseCommand):
                     )
 
                     image = File(file)
+
                     user_photo.photos.save(
-                        'photo-{}.jpg'.format(((c+i) % 7)+1), image)
+                        'photo-{}.jpg'.format(((c+i) % 7)+1),
+                        image
+                    )
                     user_photo.save()
+
+                    file.close()
 
         print('Done!')

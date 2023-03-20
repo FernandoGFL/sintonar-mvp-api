@@ -34,10 +34,10 @@ ALLOWED_HOSTS = config(
     cast=lambda v: [s.strip() for s in v.split(', ')]
 )
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://api.fernandogfleite.fun',
-    'https://api.crushonu.com.br'
-]
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    cast=lambda v: [s.strip() for s in v.split(', ')]
+)
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -209,8 +209,8 @@ SIMPLE_JWT = {
 }
 
 
-BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+BROKER_URL = config('BROKER_URL')
+CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

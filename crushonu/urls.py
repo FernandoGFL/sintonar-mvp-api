@@ -24,7 +24,7 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('api/v1/', include(
+    path('/v1/', include(
         [
             path('authentication/', include('crushonu.apps.authentication.urls')),
             path('utils/', include('crushonu.apps.utils.urls')),

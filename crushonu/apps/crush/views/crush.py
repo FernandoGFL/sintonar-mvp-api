@@ -25,6 +25,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from django.db.models import Q
+from django.utils.translation import ugettext_lazy as _
 
 
 class UserCrushViewSet(GenericViewSet,
@@ -32,7 +33,7 @@ class UserCrushViewSet(GenericViewSet,
                        ListModelMixin):
     queryset = User.objects.all()
     serializer_class = UserCrushDisplaySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -63,7 +64,13 @@ class UserCrushViewSet(GenericViewSet,
             user_from=self.request.user,
         ).values_list('user_to')
 
-        return queryset.filter(query).exclude(id=self.request.user.id).exclude(id__in=crushs).order_by('date_joined')
+        return queryset.filter(
+            query
+        ).exclude(
+            id=self.request.user.id
+        ).exclude(
+            id__in=crushs
+        ).order_by('date_joined')
 
 
 class CrushViewSet(GenericViewSet,
@@ -72,7 +79,7 @@ class CrushViewSet(GenericViewSet,
                    RetrieveModelMixin):
     queryset = Crush.objects.all()
     serializer_class = CrushCreateSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     pagination_class = None
 
     def get_serializer_class(self):
@@ -108,7 +115,9 @@ class CrushViewSet(GenericViewSet,
     def create(self, request, *args, **kwargs):
         if not UserPhoto.objects.filter(user=request.user).exists():
             return Response(
-                {"message": "Você precisa adicionar uma foto para participar do jogo."},
+                {
+                    "message": _("You need to upload at least one photo to crush someone."),
+                },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
