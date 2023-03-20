@@ -20,25 +20,20 @@ from io import BytesIO
 def resize_image(image):
     # Carrega a imagem com o PIL
     img = Image.open(image)
-    if img.mode == 'RGBA':
-        img.convert('RGB')
+    img = img.convert('RGB')
 
     # Redimensiona a imagem
     img.thumbnail((640, 800))
 
+    file_name = image.name.split('.')[0] + '.jpg'
+
     # Comprime a imagem
     img_io = BytesIO()
-    img.save(img_io, format='JPEG', optimize=True, quality=60)
-    img_io.seek(0)
+    img.save(img_io, format='JPEG', quality=75)
+    img_file = InMemoryUploadedFile(
+        img_io, None, file_name, 'image/jpeg', img_io.getbuffer().nbytes, None)
 
-    file_name = image.name
-
-    resized_file = InMemoryUploadedFile(
-        img_io, None, file_name, 'image/jpeg',
-        img_io.tell, None
-    )
-
-    return resized_file
+    return img_file
 
 
 class JWTSerializer(TokenObtainPairSerializer):
@@ -140,9 +135,10 @@ class UserPhotoSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         # Verificar se a imagem tem mais de 10MB
-        if attrs['photos'].size > 1024 * 1024 * 10:
-            raise serializers.ValidationError(
-                {"detail": "A imagem não pode ter mais de 10MB"})
+        if attrs.get('photos', None):
+            if attrs['photos'].size > 1024 * 1024 * 10:
+                raise serializers.ValidationError(
+                    {"detail": "A imagem não pode ter mais de 10MB"})
 
         return super().validate(attrs)
 
