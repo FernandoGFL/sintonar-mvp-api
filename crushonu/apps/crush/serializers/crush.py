@@ -4,6 +4,7 @@ from crushonu.apps.crush.models.crush import Crush
 from crushonu.apps.utils.serializers.fields import CustomChoiceField
 
 from rest_framework import serializers
+
 from django.contrib.auth import get_user_model
 
 
@@ -25,7 +26,7 @@ class CrushCreateSerializer(serializers.ModelSerializer):
             'updated_at',
         )
 
-    def create(self, validated_data):
+    def create(self, validated_data) -> Crush:
         user_from = validated_data.pop('user_from')
         user_to = validated_data.pop('user_to')
         kiss = validated_data.pop('kiss')
@@ -73,7 +74,7 @@ class CrushCreateSerializer(serializers.ModelSerializer):
 
         return crush
 
-    def to_representation(self, instance):
+    def to_representation(self, instance) -> dict:
         serializer = CrushDisplaySerializer(instance, context=self.context)
 
         return serializer.data
@@ -95,7 +96,9 @@ class UserCrushDisplaySerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['photos'] = UserPhotoSerializer(
-            instance.userphoto_set.all(), many=True).data
+            instance.userphoto_set.all(),
+            many=True
+        ).data
 
         return data
 
