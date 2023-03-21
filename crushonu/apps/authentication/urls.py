@@ -40,17 +40,17 @@ urlpatterns = [
         name='register_user'
     ),
     path(
-        'user-confirm/<uuid:uuid>/',
+        'confirm/<uuid:uuid>/',
         UserConfirmView.as_view(),
-        name='user_confirm'
+        name='confirm_user'
     ),
     path(
-        'user-resend-confirm/',
+        'resend-confirm/',
         UserResendConfirmView.as_view(),
-        name='user_resend_confirm'
+        name='resend_confirm_user'
     ),
     path(
-        'user/',
+        'me/',
         UserViewSet.as_view(
             {
                 'get': 'retrieve',
@@ -58,20 +58,20 @@ urlpatterns = [
                 'patch': 'partial_update'
             }
         ),
-        name='user_detail'
+        name='user-detail'
     ),
     path(
-        'user/photos/',
+        'me/photos/',
         UserPhotoViewSet.as_view(
             {
                 'post': 'create',
                 'get': 'list'
             }
         ),
-        name='user_photo_list'
+        name='userphoto-list'
     ),
     path(
-        'user/photos/<uuid:pk>/',
+        'me/photos/<uuid:pk>/',
         UserPhotoViewSet.as_view(
             {
                 'get': 'retrieve',
@@ -79,10 +79,10 @@ urlpatterns = [
                 'patch': 'partial_update'
             }
         ),
-        name='user_photo_detail'),
+        name='userphoto-detail'),
     path(
         'change-password/',
         UserChangePasswordView.as_view(),
-        name='change_password'
+        name='change_password_user'
     )
 ]
