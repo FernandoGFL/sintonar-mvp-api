@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'corsheaders',
     'dbbackup',
+    'drf_spectacular',
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -186,6 +187,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 AWS_DEFAULT_ACL = None
@@ -223,4 +225,12 @@ DBBACKUP_STORAGE_OPTIONS = {
     'secret_key': AWS_SECRET_ACCESS_KEY,
     'bucket_name': AWS_STORAGE_BUCKET_NAME,
     'default_acl': 'private',
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'CrushOnU API',
+    'DESCRIPTION': 'API para o jogo CrushOnU',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }

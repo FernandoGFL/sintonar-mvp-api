@@ -1,0 +1,869 @@
+openapi: 3.0.3
+info:
+  title: CrushOnU API
+  version: 1.0.0
+  description: API para o jogo CrushOnU
+paths:
+  /v1/authentication/change-password/:
+    put:
+      operationId: authentication_change_password_update
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserChangePassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserChangePassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserChangePassword'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserChangePassword'
+          description: ''
+    patch:
+      operationId: authentication_change_password_partial_update
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserChangePassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserChangePassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserChangePassword'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserChangePassword'
+          description: ''
+  /v1/authentication/confirm/{uuid}/:
+    post:
+      operationId: authentication_confirm_create
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /v1/authentication/me/:
+    get:
+      operationId: authentication_me_retrieve
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: authentication_me_update
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: authentication_me_partial_update
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /v1/authentication/me/photos/:
+    get:
+      operationId: authentication_me_photos_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserPhotoList'
+          description: ''
+    post:
+      operationId: authentication_me_photos_create
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserPhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserPhoto'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPhoto'
+          description: ''
+  /v1/authentication/me/photos/{id}/:
+    get:
+      operationId: authentication_me_photos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPhoto'
+          description: ''
+    patch:
+      operationId: authentication_me_photos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPhoto'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPhoto'
+          description: ''
+    delete:
+      operationId: authentication_me_photos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /v1/authentication/password-reset/:
+    post:
+      operationId: authentication_password_reset_create
+      description: |-
+        An Api View which provides a method to request a password reset token based on an e-mail address
+
+        Sends a signal reset_password_token_created when a reset token was created
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Email'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Email'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Email'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+          description: ''
+  /v1/authentication/password-reset/confirm/:
+    post:
+      operationId: authentication_password_reset_confirm_create
+      description: An Api View which provides a method to reset a password based on
+        a unique token
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordToken'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordToken'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordToken'
+          description: ''
+  /v1/authentication/password-reset/validate_token/:
+    post:
+      operationId: authentication_password_reset_validate_token_create
+      description: An Api View which provides a method to verify that a token is valid
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetToken'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResetToken'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetToken'
+          description: ''
+  /v1/authentication/register/:
+    post:
+      operationId: authentication_register_create
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegister'
+          description: ''
+  /v1/authentication/resend-confirm/:
+    post:
+      operationId: authentication_resend_confirm_create
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /v1/authentication/token/:
+    post:
+      operationId: authentication_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JWT'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JWT'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JWT'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWT'
+          description: ''
+  /v1/authentication/token/refresh/:
+    post:
+      operationId: authentication_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /v1/crush/:
+    get:
+      operationId: crush_list
+      parameters:
+      - in: query
+        name: matched
+        schema:
+          type: boolean
+        description: Filter by matched crushs.
+        examples:
+          Matched:
+            value: 'true'
+            summary: If you want to filter by matched crushs.
+      tags:
+      - crush
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CrushDisplay'
+          description: ''
+    post:
+      operationId: crush_create
+      tags:
+      - crush
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrushCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CrushCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CrushCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrushCreate'
+          description: ''
+  /v1/crush/{id}/:
+    get:
+      operationId: crush_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this crush.
+        required: true
+      tags:
+      - crush
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrushDisplay'
+          description: ''
+  /v1/crush/users/:
+    get:
+      operationId: crush_users_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - crush
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserCrushDisplayList'
+          description: ''
+components:
+  schemas:
+    CrushCreate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        user_from:
+          type: string
+          format: uuid
+        user_to:
+          type: string
+          format: uuid
+        kiss:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - updated_at
+      - user_from
+      - user_to
+    CrushDisplay:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        user:
+          $ref: '#/components/schemas/UserCrushDisplay'
+        match:
+          type: boolean
+      required:
+      - id
+      - user
+    Email:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    GenderEnum:
+      enum:
+      - M
+      - W
+      - N
+      type: string
+      description: |-
+        * `M` - Homem
+        * `W` - Mulher
+        * `N` - Não-binário
+    JWT:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    PaginatedUserCrushDisplayList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserCrushDisplay'
+    PaginatedUserPhotoList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPhoto'
+    PasswordToken:
+      type: object
+      properties:
+        password:
+          type: string
+          title: Senha
+        token:
+          type: string
+      required:
+      - password
+      - token
+    PatchedUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        birthday:
+          type: string
+          format: date
+        first_name:
+          type: string
+          title: Primeiro nome
+          maxLength: 150
+        last_name:
+          type: string
+          title: Último nome
+          maxLength: 150
+        description:
+          type: string
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        preference:
+          $ref: '#/components/schemas/PreferenceEnum'
+        full_name:
+          type: string
+          readOnly: true
+        age:
+          type: integer
+          readOnly: true
+        has_description:
+          type: boolean
+          readOnly: true
+        has_uploaded_photo:
+          type: boolean
+          readOnly: true
+    PatchedUserChangePassword:
+      type: object
+      properties:
+        password:
+          type: string
+          writeOnly: true
+        new_password:
+          type: string
+          writeOnly: true
+    PatchedUserPhoto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        photos:
+          type: string
+          format: uri
+          writeOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        is_favorite:
+          type: boolean
+    PreferenceEnum:
+      enum:
+      - M
+      - W
+      - A
+      type: string
+      description: |-
+        * `M` - Homem
+        * `W` - Mulher
+        * `A` - Todos
+    ResetToken:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+      - token
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        birthday:
+          type: string
+          format: date
+        first_name:
+          type: string
+          title: Primeiro nome
+          maxLength: 150
+        last_name:
+          type: string
+          title: Último nome
+          maxLength: 150
+        description:
+          type: string
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        preference:
+          $ref: '#/components/schemas/PreferenceEnum'
+        full_name:
+          type: string
+          readOnly: true
+        age:
+          type: integer
+          readOnly: true
+        has_description:
+          type: boolean
+          readOnly: true
+        has_uploaded_photo:
+          type: boolean
+          readOnly: true
+      required:
+      - age
+      - birthday
+      - email
+      - full_name
+      - has_description
+      - has_uploaded_photo
+      - id
+    UserChangePassword:
+      type: object
+      properties:
+        password:
+          type: string
+          writeOnly: true
+        new_password:
+          type: string
+          writeOnly: true
+      required:
+      - new_password
+      - password
+    UserCrushDisplay:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        full_name:
+          type: string
+        age:
+          type: integer
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        description:
+          type: string
+      required:
+      - age
+      - full_name
+      - gender
+      - id
+    UserPhoto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        photos:
+          type: string
+          format: uri
+          writeOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        is_favorite:
+          type: boolean
+      required:
+      - id
+      - photos
+      - url
+    UserRegister:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+        birthday:
+          type: string
+          format: date
+        first_name:
+          type: string
+        last_name:
+          type: string
+          default: ''
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        preference:
+          $ref: '#/components/schemas/PreferenceEnum'
+      required:
+      - birthday
+      - email
+      - first_name
+      - gender
+      - password
+      - preference
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
