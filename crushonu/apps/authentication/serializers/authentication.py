@@ -169,6 +169,9 @@ class UserSerializer(serializers.ModelSerializer):
         required=False
     )
 
+    age = serializers.IntegerField(read_only=True)
+    full_name = serializers.CharField(read_only=True)
+
     class Meta:
         model = User
         fields = (

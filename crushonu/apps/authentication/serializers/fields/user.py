@@ -1,5 +1,5 @@
 from rest_framework.serializers import (
-    RelatedField,
+    PrimaryKeyRelatedField,
     ValidationError
 )
 
@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 User = get_user_model()
 
 
-class UserField(RelatedField):
+class UserField(PrimaryKeyRelatedField):
     def get_queryset(self):
         return User.objects.filter(
             is_confirmed=True
@@ -23,5 +23,7 @@ class UserField(RelatedField):
             )
         except User.DoesNotExist:
             raise ValidationError(
-                _(f'Invalid pk \"{data}\" - object does not exist.')
+                detail={
+                    'detail': _(f'Invalid pk \"{data}\" - object does not exist.')
+                }
             )

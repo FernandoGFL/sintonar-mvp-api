@@ -14,6 +14,7 @@ from crushonu.apps.authentication.views.authentication import (
     UserPhotoViewSet,
     UserChangePasswordView
 )
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 # JWT Auth
 urlpatterns = [
@@ -31,7 +32,7 @@ urlpatterns = [
     ),
     path(
         'token/refresh/',
-        TokenRefreshView.as_view(),
+        TokenRefreshView.as_view(serializer_class=TokenRefreshSerializer),
         name='token_refresh'
     ),
     path(
