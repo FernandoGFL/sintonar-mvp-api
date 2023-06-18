@@ -12,7 +12,7 @@ from crushonu.apps.authentication.models import (
 from crushonu.apps.authentication.signals import send_email_confirmation
 
 from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.mixins import (
     CreateModelMixin,

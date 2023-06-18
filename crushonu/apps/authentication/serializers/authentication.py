@@ -7,7 +7,7 @@ from crushonu.apps.authentication.models import (
 from crushonu.apps.utils.image import resize_image
 
 from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import PermissionDenied
