@@ -18,17 +18,27 @@ from django.urls import (
     path,
     include
 )
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
     path('crushonu/', admin.site.urls),
 ]
 
 urlpatterns += [
-    path('/v1/', include(
+    path('v1/', include(
         [
             path('authentication/', include('crushonu.apps.authentication.urls')),
             path('utils/', include('crushonu.apps.utils.urls')),
             path('crush/', include('crushonu.apps.crush.urls')),
+            path('schema/', SpectacularAPIView.as_view(), name='schema'),
+            path('schema/swagger-ui/',
+                 SpectacularSwaggerView.as_view(url_name='schema'),
+                 name='swagger-ui'
+                 ),
+            path('schema/redoc/',
+                 SpectacularRedocView.as_view(url_name='schema'),
+                 name='redoc'
+                 ),
         ]
     )),
 ]

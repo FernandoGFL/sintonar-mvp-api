@@ -7,7 +7,7 @@ from crushonu.apps.authentication.models import (
 from crushonu.apps.utils.image import resize_image
 
 from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import PermissionDenied
@@ -168,6 +168,9 @@ class UserSerializer(serializers.ModelSerializer):
         allow_null=False,
         required=False
     )
+
+    age = serializers.IntegerField(read_only=True)
+    full_name = serializers.CharField(read_only=True)
 
     class Meta:
         model = User

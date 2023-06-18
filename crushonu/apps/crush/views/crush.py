@@ -22,10 +22,14 @@ from rest_framework.viewsets import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework import status
 
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
+
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from drf_spectacular.types import OpenApiTypes
 
 
 class UserCrushViewSet(GenericViewSet,
@@ -114,11 +118,10 @@ class CrushViewSet(GenericViewSet,
 
     def create(self, request, *args, **kwargs):
         if not UserPhoto.objects.filter(user=request.user).exists():
-            return Response(
-                {
-                    "message": _("You need to upload at least one photo to crush someone."),
-                },
-                status=status.HTTP_400_BAD_REQUEST
+            raise ValidationError(
+                detail={
+                    'detail': _('You need to upload at least one photo to send a crush.')
+                }
             )
 
         data = dict(**request.data)
@@ -129,3 +132,23 @@ class CrushViewSet(GenericViewSet,
         headers = self.get_success_headers(serializer.data)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='matched',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                description='Filter by matched crushs.',
+                examples=[
+                    OpenApiExample(
+                        name='Matched',
+                        summary='If you want to filter by matched crushs.',
+                        value='true',
+                    )
+                ]
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)

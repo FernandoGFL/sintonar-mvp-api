@@ -82,6 +82,8 @@ class CrushCreateSerializer(serializers.ModelSerializer):
 
 class UserCrushDisplaySerializer(serializers.ModelSerializer):
     gender = CustomChoiceField(choices=User.GENDER)
+    full_name = serializers.CharField()
+    age = serializers.IntegerField()
 
     class Meta:
         model = User
