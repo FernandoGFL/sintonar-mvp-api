@@ -12,7 +12,7 @@ def resize_image(image_instance):
     # Resize the image
     image.thumbnail((640, 800))
 
-    file_name = image.name.split('.')[0] + '.jpg'
+    file_name = image_instance.name.split('.')[0] + '.jpg'
 
     # Compress the image
     image_io = BytesIO()
