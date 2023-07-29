@@ -4,7 +4,7 @@ from crushonu.apps.authentication.models import (
     UserConfirm,
     UserPhoto
 )
-from crushonu.apps.utils.image import resize_image
+# from crushonu.apps.utils.image import resize_image
 
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
@@ -134,11 +134,18 @@ class UserPhotoSerializer(serializers.ModelSerializer):
                 }
             )
 
-        photo = resize_image(validated_data['photos'])
+        # TODO: Retirar o resize_image caso o frontend faça o resize
+        # photo = resize_image(validated_data['photos'])
+
+        # user_photo = UserPhoto.objects.create(
+        #     user=self.context['request'].user,
+        #     photos=photo,
+        #     is_favorite=validated_data.get('is_favorite', False)
+        # )
 
         user_photo = UserPhoto.objects.create(
             user=self.context['request'].user,
-            photos=photo,
+            photos=validated_data['photos'],
             is_favorite=validated_data.get('is_favorite', False)
         )
 
