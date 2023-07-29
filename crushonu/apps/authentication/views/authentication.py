@@ -141,6 +141,9 @@ class UserViewSet(
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
+    def get_object(self):
+        return self.request.user
+
 
 class UserPhotoViewSet(ModelViewSet):
     queryset = UserPhoto.objects.all()
