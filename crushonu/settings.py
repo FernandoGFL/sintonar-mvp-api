@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import logging
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
@@ -38,8 +39,16 @@ CSRF_TRUSTED_ORIGINS = config(
     'CSRF_TRUSTED_ORIGINS',
     cast=lambda v: [s.strip() for s in v.split(', ')]
 )
+
+logging.basicConfig(
+    format='%(asctime)s - %(process)d - %(levelname)s - %(message)s',
+    datefmt='%d-%b-%y %H:%M:%S',
+    filename='trace.log',
+    filemode='a',
+    level=logging.DEBUG
+)
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
@@ -76,11 +85,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = config(
-    'ALLOWED_HOSTS_CORS',
-    cast=lambda v: [s.strip() for s in v.split(', ')]
-)
-
+# CORS_ALLOWED_ORIGINS = config(
+#    'ALLOWED_HOSTS_CORS',
+#    cast=lambda v: [s.strip() for s in v.split(', ')]
+# )
+CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'crushonu.urls'
 
 TEMPLATES = [
