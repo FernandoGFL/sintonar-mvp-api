@@ -12,14 +12,14 @@ def resize_image(image_instance):
     # Resize the image
     image.thumbnail((640, 800))
 
-    file_name = image.name.split('.')[0] + '.jpg'
+    file_name = image_instance.name.split('.')[0] + '.jpg'
 
     # Compress the image
     image_io = BytesIO()
     image.save(image_io, format='JPEG', quality=75)
     resized_image = InMemoryUploadedFile(
         file=image_io,
-        field=None,
+        field_name=None,
         name=file_name,
         content_type='image/jpeg',
         size=image_io.getbuffer().nbytes,

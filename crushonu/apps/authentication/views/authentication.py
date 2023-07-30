@@ -12,7 +12,7 @@ from crushonu.apps.authentication.models import (
 from crushonu.apps.authentication.signals import send_email_confirmation
 
 from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -30,6 +30,7 @@ from rest_framework.viewsets import (
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 from rest_framework import status
 
 
@@ -54,6 +55,8 @@ class UserRegisterViewSet(CreateModelMixin, GenericViewSet):
 
 
 class UserConfirmView(APIView):
+    serializer_class = None
+
     def post(self, request, uuid, format=None):
         try:
             user_confirm = UserConfirm.objects.get(identification_code=uuid)
@@ -72,11 +75,10 @@ class UserConfirmView(APIView):
             user.save()
 
         except UserConfirm.DoesNotExist:
-            return Response(
-                {
-                    "detail": _("Invalid confirmation code.")
-                },
-                status=status.HTTP_400_BAD_REQUEST,
+            raise ValidationError(
+                detail={
+                    "detail": _("Invalid identification code.")
+                }
             )
 
         return Response(
@@ -88,15 +90,16 @@ class UserConfirmView(APIView):
 
 
 class UserResendConfirmView(APIView):
+    serializer_class = None
+
     def post(self, request, format=None):
         email = request.data.get("email", None)
 
         if not email:
-            return Response(
-                {
+            raise ValidationError(
+                detail={
                     "detail": _("Email is required.")
                 },
-                status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
@@ -137,6 +140,9 @@ class UserViewSet(
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user
 
 
 class UserPhotoViewSet(ModelViewSet):

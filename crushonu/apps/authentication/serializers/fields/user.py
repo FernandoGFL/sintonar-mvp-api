@@ -1,15 +1,15 @@
 from rest_framework.serializers import (
-    RelatedField,
+    PrimaryKeyRelatedField,
     ValidationError
 )
 
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
 
-class UserField(RelatedField):
+class UserField(PrimaryKeyRelatedField):
     def get_queryset(self):
         return User.objects.filter(
             is_confirmed=True
@@ -23,5 +23,7 @@ class UserField(RelatedField):
             )
         except User.DoesNotExist:
             raise ValidationError(
-                _(f'Invalid pk \"{data}\" - object does not exist.')
+                detail={
+                    'detail': _(f'Invalid pk \"{data}\" - object does not exist.')
+                }
             )

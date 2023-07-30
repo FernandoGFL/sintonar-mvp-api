@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import logging
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
@@ -38,8 +39,16 @@ CSRF_TRUSTED_ORIGINS = config(
     'CSRF_TRUSTED_ORIGINS',
     cast=lambda v: [s.strip() for s in v.split(', ')]
 )
+
+logging.basicConfig(
+    format='%(asctime)s - %(process)d - %(levelname)s - %(message)s',
+    datefmt='%d-%b-%y %H:%M:%S',
+    filename='trace.log',
+    filemode='a',
+    level=logging.DEBUG
+)
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
@@ -60,6 +69,7 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'corsheaders',
     'dbbackup',
+    'drf_spectacular',
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -75,11 +85,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = config(
-    'ALLOWED_HOSTS_CORS',
-    cast=lambda v: [s.strip() for s in v.split(', ')]
-)
-
+# CORS_ALLOWED_ORIGINS = config(
+#    'ALLOWED_HOSTS_CORS',
+#    cast=lambda v: [s.strip() for s in v.split(', ')]
+# )
+CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'crushonu.urls'
 
 TEMPLATES = [
@@ -186,6 +196,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 AWS_DEFAULT_ACL = None
@@ -209,8 +220,8 @@ SIMPLE_JWT = {
 }
 
 
-BROKER_URL = config('BROKER_URL')
-CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
+BROKER_URL = f"redis://{config('BROKER_URL')}"
+CELERY_RESULT_BACKEND = f"redis://{config('CELERY_RESULT_BACKEND')}/0"
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -223,4 +234,12 @@ DBBACKUP_STORAGE_OPTIONS = {
     'secret_key': AWS_SECRET_ACCESS_KEY,
     'bucket_name': AWS_STORAGE_BUCKET_NAME,
     'default_acl': 'private',
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'CrushOnU API',
+    'DESCRIPTION': 'API para o jogo CrushOnU',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }

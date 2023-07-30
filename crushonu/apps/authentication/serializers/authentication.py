@@ -4,10 +4,10 @@ from crushonu.apps.authentication.models import (
     UserConfirm,
     UserPhoto
 )
-from crushonu.apps.utils.image import resize_image
+# from crushonu.apps.utils.image import resize_image
 
 from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import PermissionDenied
@@ -134,11 +134,18 @@ class UserPhotoSerializer(serializers.ModelSerializer):
                 }
             )
 
-        photo = resize_image(validated_data['photos'])
+        # TODO: Retirar o resize_image caso o frontend faça o resize
+        # photo = resize_image(validated_data['photos'])
+
+        # user_photo = UserPhoto.objects.create(
+        #     user=self.context['request'].user,
+        #     photos=photo,
+        #     is_favorite=validated_data.get('is_favorite', False)
+        # )
 
         user_photo = UserPhoto.objects.create(
             user=self.context['request'].user,
-            photos=photo,
+            photos=validated_data['photos'],
             is_favorite=validated_data.get('is_favorite', False)
         )
 
@@ -168,6 +175,9 @@ class UserSerializer(serializers.ModelSerializer):
         allow_null=False,
         required=False
     )
+
+    age = serializers.IntegerField(read_only=True)
+    full_name = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
