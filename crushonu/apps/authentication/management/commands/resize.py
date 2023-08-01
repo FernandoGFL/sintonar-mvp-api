@@ -38,15 +38,19 @@ def save_image(user_photo, file):
     """Salva uma imagem redimensionada e comprimida."""
     # Redimensiona e comprime a imagem usando a função resize_image
 
-    resized_file = resize_image(file)
+    try:
 
-    # Cria um objeto InMemoryUploadedFile a partir do arquivo redimensionado e comprimido
-    file_name = file.name.split('.')[0] + '.jpg'
+        resized_file = resize_image(file)
 
-    # Salva o arquivo redimensionado e comprimido no banco de dados ou no sistema de arquivos
-    # (o código abaixo salva o arquivo no sistema de arquivos)
-    user_photo.photos.save(file_name, resized_file)
-    user_photo.save()
+        # Cria um objeto InMemoryUploadedFile a partir do arquivo redimensionado e comprimido
+        file_name = file.name.split('.')[0] + '.jpg'
+
+        # Salva o arquivo redimensionado e comprimido no banco de dados ou no sistema de arquivos
+        # (o código abaixo salva o arquivo no sistema de arquivos)
+        user_photo.photos.save(file_name, resized_file)
+        user_photo.save()
+    except:
+        user_photo.photos.delete()
 
 
 class Command(BaseCommand):
