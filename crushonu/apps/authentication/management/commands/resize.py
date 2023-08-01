@@ -1,11 +1,11 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from crushonu.apps.authentication.models import UserPhoto
 from PIL import Image
 from io import BytesIO
+
 
 Image.MAX_IMAGE_PIXELS = None
 
@@ -21,10 +21,17 @@ def resize_image(image_instance):
     img_io = BytesIO()
 
     img.save(img_io, format='JPEG', quality=75)
-    img_file = InMemoryUploadedFile(
-        img_io, None, file_name, 'image/jpeg', img_io.getbuffer().nbytes, None)
 
-    return img_file
+    resized_image = InMemoryUploadedFile(
+        file=img_io,
+        field_name=None,
+        name=file_name,
+        content_type='image/jpeg',
+        size=img_io.getbuffer().nbytes,
+        charset=None
+    )
+
+    return resized_image
 
 
 def save_image(user_photo, file):
@@ -35,17 +42,11 @@ def save_image(user_photo, file):
 
     # Cria um objeto InMemoryUploadedFile a partir do arquivo redimensionado e comprimido
     file_name = file.name.split('.')[0] + '.jpg'
-    file_content = ContentFile(resized_file.read())
-    resized_file = InMemoryUploadedFile(
-        file_content, None, file_name, 'image/jpeg',
-        file_content.tell, None
-    )
 
     # Salva o arquivo redimensionado e comprimido no banco de dados ou no sistema de arquivos
     # (o código abaixo salva o arquivo no sistema de arquivos)
     user_photo.photos.save(file_name, resized_file)
     user_photo.save()
-    print('Done!')
 
 
 class Command(BaseCommand):
