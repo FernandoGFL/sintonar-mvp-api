@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: CrushOnU API
+  title: Sintonar API
   version: 1.0.0
-  description: API para o jogo CrushOnU
+  description: API para o jogo Sintonar
 paths:
   /v1/authentication/change-password/:
     put:

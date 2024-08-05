@@ -1,16 +1,16 @@
 # CrushOnU API
-API para a utilizar no jogo da CrushOnU
+API para a utilizar no jogo do Sintonar
 
 ## Requerimentos (Usando Linux)
-- Python 3.10.4
+- Python 3.12.4
 - Postgres
 - Conta na AWS
 - Conta na Google
 - Redis
 
 ## Instalação
-- Clonar o repositório: ```git clone git@github.com:fernandogfleite/crushonu-api.git```
-- Entrar no repositório: ```cd crushonu-api```
+- Clonar o repositório: ```git clone git@github.com:FernandoGFL/sintonar-mvp-api.git```
+- Entrar no repositório: ```cd sintonar-mvp-api```
 - Instalar a virtualenv: ```python -m venv venv```
 - Ativar a virtualenv: ```source venv/bin/activate```
 - Instalar as bibliotecas: ```pip install -r requirements.txt```
@@ -20,8 +20,4 @@ API para a utilizar no jogo da CrushOnU
 
 ## Rodar o projeto
 - Para rodar execute o seguinte comando: ```python manage.py runserver```
-- Para executar o celery execute o seguinte comando: ```celery -A crushonu worker -l INFO```
-
-
-## Insomnia
-[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=CrushOnU%20API&uri=https%3A%2F%2Fgithub.com%2Ffernandogfleite%2Fcrushonu-api%2Fblob%2Fdevelop%2Finsomnia.json)
+- Para executar o celery execute o seguinte comando: ```celery -A sintonar worker -l INFO```
