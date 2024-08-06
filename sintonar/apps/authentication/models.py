@@ -61,6 +61,11 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     birthday = models.DateField()
     description = models.TextField(blank=True)
+
+    interests = models.ManyToManyField(
+        Interest, through="UserInterest", related_name="users", blank=True
+    )
+
     is_confirmed = models.BooleanField(default=False)
     has_uploaded_photo = models.BooleanField(default=False)
     has_description = models.BooleanField(default=False)
@@ -82,6 +87,53 @@ class User(AbstractUser):
     @property
     def full_name(self):
         return self.get_full_name()
+
+
+class UserInterest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    interest = models.ForeignKey(Interest, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "users_interests"
+        unique_together = ("user", "interest")
+
+    @property
+    def members(self):
+        return User.objects.filter(
+            id__in=UserInterest.objects.filter(interest=self.interest)
+            .exclude(user=self.user)
+            .values_list("user", flat=True)
+        ).order_by("first_name", "last_name")
+
+    @property
+    def members_count(self):
+        return self.members.count()
+
+    @property
+    def matched_members_count(self):
+        from sintonar.apps.match.models.match import Match
+
+        matchs = Match.objects.filter(
+            user_from=self.request.user, user_to__in=self.members, match=True
+        )
+
+        return matchs.count()
+
+    @property
+    def viewed_members_count(self):
+        from sintonar.apps.match.models.match import Match
+
+        matchs = Match.objects.filter(
+            user_from=self.request.user, user_to__in=self.members
+        )
+
+        return matchs.count()
+
+    @property
+    def not_viewed_members_count(self):
+        return self.members_count - self.viewed_members_count
 
 
 def model_directory_path(instance, filename):
