@@ -1,4 +1,8 @@
+import operator
+from functools import reduce
+
 from django.db import transaction
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -36,6 +40,23 @@ from sintonar.apps.authentication.signals import send_email_confirmation
 class InterestViewSet(ListModelMixin, GenericViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        name = self.request.query_params.get("name", None)
+
+        query = Q()
+
+        if name:
+            query &= reduce(
+                operator.__and__,
+                (Q(name__unaccent__icontains=term) for term in name.split()),
+            )
+
+            queryset = queryset.filter(query)
+
+        return queryset.order_by("name")
 
 
 class UserRegisterViewSet(CreateModelMixin, GenericViewSet):
