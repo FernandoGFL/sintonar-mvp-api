@@ -5,7 +5,14 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from sintonar.apps.authentication.models import User, UserConfirm, UserPhoto
+from sintonar.apps.authentication.models import (
+    Interest,
+    User,
+    UserConfirm,
+    UserInterest,
+    UserPhoto,
+)
+from sintonar.apps.authentication.serializers.fields.user import InterestField
 from sintonar.apps.utils.image import resize_image
 
 
@@ -38,6 +45,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=False, allow_blank=True, default="")
+    interests = InterestField(many=True, required=False)
 
     class Meta:
         model = User
@@ -47,12 +55,17 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             "birthday",
             "first_name",
             "last_name",
+            "interests",
         )
 
     def create(self, validated_data) -> User:
+        interests = validated_data.pop("interests", [])
+
         user = User.objects.create_user(
             **validated_data,
         )
+
+        user.interests.set(interests)
 
         UserConfirm.objects.create(user=user)
 
@@ -123,9 +136,19 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class InterestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interest
+        fields = (
+            "id",
+            "name",
+        )
+
+
 class UserSerializer(serializers.ModelSerializer):
     age = serializers.IntegerField(read_only=True)
     full_name = serializers.CharField(read_only=True)
+    interests = InterestSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
@@ -140,6 +163,7 @@ class UserSerializer(serializers.ModelSerializer):
             "age",
             "has_description",
             "has_uploaded_photo",
+            "interests",
         )
         read_only_fields = (
             "id",
@@ -147,6 +171,7 @@ class UserSerializer(serializers.ModelSerializer):
             "photos",
             "has_description",
             "has_uploaded_photo",
+            "interests",
         )
 
     def to_representation(self, instance) -> dict:
@@ -184,3 +209,21 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class UserInterestSerializer(serializers.ModelSerializer):
+    interest = InterestSerializer(read_only=True)
+    members_count = serializers.IntegerField(read_only=True)
+    matched_members_count = serializers.IntegerField(read_only=True)
+    viewed_members_count = serializers.IntegerField(read_only=True)
+    not_viewed_members_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = UserInterest
+        fields = (
+            "interest",
+            "members_count",
+            "matched_members_count",
+            "viewed_members_count",
+            "not_viewed_members_count",
+        )
