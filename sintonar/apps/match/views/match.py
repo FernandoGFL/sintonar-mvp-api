@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from sintonar.apps.authentication.models import User, UserPhoto
+from sintonar.apps.authentication.models import Interest, User, UserPhoto
 from sintonar.apps.match.models.match import Match
 from sintonar.apps.match.serializers.match import (
     MatchCreateSerializer,
@@ -27,11 +27,27 @@ class UserMatchViewSet(GenericViewSet, ListAPIView, ListModelMixin):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        users_with_photos = UserPhoto.objects.values_list("user_id").distinct()
+        interest = self.query_params.get("interest", None)
+
+        if not interest:
+            raise ValidationError(
+                detail={"detail": _("You need to provide an interest to find users.")}
+            )
+
+        try:
+            interest = Interest.objects.get(id=interest)
+
+        except Interest.DoesNotExist:
+            raise ValidationError(detail={"detail": _("Invalid interest.")})
+
+        users_with_photos = UserPhoto.objects.values_list(
+            "user_id", flat=True
+        ).distinct()
 
         query = Q(
             is_confirmed=True,
             id__in=users_with_photos,
+            interests__id=interest.id,
         )
 
         matchs = Match.objects.filter(
