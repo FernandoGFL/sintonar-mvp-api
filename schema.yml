@@ -72,6 +72,28 @@ paths:
       responses:
         '200':
           description: No response body
+  /v1/authentication/interests/:
+    get:
+      operationId: authentication_interests_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInterestList'
+          description: ''
   /v1/authentication/me/:
     get:
       operationId: authentication_me_retrieve
@@ -420,6 +442,64 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
+  /v1/authentication/user-interests/:
+    get:
+      operationId: authentication_user_interests_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserInterestList'
+          description: ''
+  /v1/authentication/user-interests/{id}/:
+    get:
+      operationId: authentication_user_interests_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user interest.
+        required: true
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInterest'
+          description: ''
+    delete:
+      operationId: authentication_user_interests_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user interest.
+        required: true
+      tags:
+      - authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /v1/match/:
     get:
       operationId: match_list
@@ -497,6 +577,11 @@ paths:
     get:
       operationId: match_users_list
       parameters:
+      - in: query
+        name: interest
+        schema:
+          type: integer
+        description: The interest id you want to filter by.
       - name: page
         required: false
         in: query
@@ -524,6 +609,19 @@ components:
           format: email
       required:
       - email
+    Interest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+      required:
+      - id
+      - name
     JWT:
       type: object
       properties:
@@ -579,6 +677,52 @@ components:
       required:
       - id
       - user
+    PaginatedInterestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interest'
+    PaginatedUserInterestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserInterest'
     PaginatedUserMatchDisplayList:
       type: object
       required:
@@ -672,6 +816,11 @@ components:
         has_uploaded_photo:
           type: boolean
           readOnly: true
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interest'
+          readOnly: true
     PatchedUserChangePassword:
       type: object
       properties:
@@ -752,6 +901,11 @@ components:
         has_uploaded_photo:
           type: boolean
           readOnly: true
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interest'
+          readOnly: true
       required:
       - age
       - birthday
@@ -760,6 +914,7 @@ components:
       - has_description
       - has_uploaded_photo
       - id
+      - interests
     UserChangePassword:
       type: object
       properties:
@@ -772,6 +927,31 @@ components:
       required:
       - new_password
       - password
+    UserInterest:
+      type: object
+      properties:
+        interest:
+          allOf:
+          - $ref: '#/components/schemas/Interest'
+          readOnly: true
+        members_count:
+          type: integer
+          readOnly: true
+        matched_members_count:
+          type: integer
+          readOnly: true
+        viewed_members_count:
+          type: integer
+          readOnly: true
+        not_viewed_members_count:
+          type: integer
+          readOnly: true
+      required:
+      - interest
+      - matched_members_count
+      - members_count
+      - not_viewed_members_count
+      - viewed_members_count
     UserMatchDisplay:
       type: object
       properties:
@@ -827,6 +1007,11 @@ components:
         last_name:
           type: string
           default: ''
+        interests:
+          type: array
+          items:
+            type: string
+            format: uuid
       required:
       - birthday
       - email
