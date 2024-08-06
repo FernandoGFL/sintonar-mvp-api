@@ -41,29 +41,25 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
+class Interest(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "interests"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
 class User(AbstractUser):
-    MAN = "M"
-    WOMAN = "W"
-    NEUTRAL = "N"
-
-    GENDER = (
-        (MAN, "Homem"),
-        (WOMAN, "Mulher"),
-        (NEUTRAL, "Não-binário"),
-    )
-
-    MAN = "M"
-    WOMAN = "W"
-    ALL = "A"
-
-    PREFERENCES = ((MAN, "Homem"), (WOMAN, "Mulher"), (ALL, "Todos"))
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = None
     email = models.EmailField(unique=True)
     birthday = models.DateField()
-    gender = models.CharField(max_length=1, choices=GENDER)
-    preference = models.CharField(max_length=1, choices=PREFERENCES)
     description = models.TextField(blank=True)
     is_confirmed = models.BooleanField(default=False)
     has_uploaded_photo = models.BooleanField(default=False)
@@ -72,7 +68,7 @@ class User(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["gender", "preference", "birthday", "first_name"]
+    REQUIRED_FIELDS = ["birthday", "first_name"]
 
     objects = UserManager()
 

@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "sintonar.apps.authentication.apps.AuthenticationConfig",
-    "sintonar.apps.crush.apps.CrushConfig",
+    "sintonar.apps.match.apps.MatchConfig",
     "sintonar.apps.utils.apps.UtilsConfig",
     "rest_framework",
     "storages",

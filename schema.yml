@@ -420,21 +420,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
-  /v1/crush/:
+  /v1/match/:
     get:
-      operationId: crush_list
+      operationId: match_list
       parameters:
       - in: query
         name: matched
         schema:
           type: boolean
-        description: Filter by matched crushs.
+        description: Filter by matched users.
         examples:
           Matched:
             value: 'true'
-            summary: If you want to filter by matched crushs.
+            summary: If you want to filter by matched users.
       tags:
-      - crush
+      - match
       security:
       - jwtAuth: []
       responses:
@@ -444,23 +444,23 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CrushDisplay'
+                  $ref: '#/components/schemas/MatchDisplay'
           description: ''
     post:
-      operationId: crush_create
+      operationId: match_create
       tags:
-      - crush
+      - match
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CrushCreate'
+              $ref: '#/components/schemas/MatchCreate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/CrushCreate'
+              $ref: '#/components/schemas/MatchCreate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/CrushCreate'
+              $ref: '#/components/schemas/MatchCreate'
         required: true
       security:
       - jwtAuth: []
@@ -469,21 +469,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CrushCreate'
+                $ref: '#/components/schemas/MatchCreate'
           description: ''
-  /v1/crush/{id}/:
+  /v1/match/{id}/:
     get:
-      operationId: crush_retrieve
+      operationId: match_retrieve
       parameters:
       - in: path
         name: id
         schema:
           type: string
           format: uuid
-        description: A UUID string identifying this crush.
+        description: A UUID string identifying this match.
         required: true
       tags:
-      - crush
+      - match
       security:
       - jwtAuth: []
       responses:
@@ -491,11 +491,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CrushDisplay'
+                $ref: '#/components/schemas/MatchDisplay'
           description: ''
-  /v1/crush/users/:
+  /v1/match/users/:
     get:
-      operationId: crush_users_list
+      operationId: match_users_list
       parameters:
       - name: page
         required: false
@@ -504,7 +504,7 @@ paths:
         schema:
           type: integer
       tags:
-      - crush
+      - match
       security:
       - jwtAuth: []
       responses:
@@ -512,11 +512,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedUserCrushDisplayList'
+                $ref: '#/components/schemas/PaginatedUserMatchDisplayList'
           description: ''
 components:
   schemas:
-    CrushCreate:
+    Email:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    JWT:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    MatchCreate:
       type: object
       properties:
         id:
@@ -529,7 +549,7 @@ components:
         user_to:
           type: string
           format: uuid
-        kiss:
+        like:
           type: boolean
         created_at:
           type: string
@@ -545,7 +565,7 @@ components:
       - updated_at
       - user_from
       - user_to
-    CrushDisplay:
+    MatchDisplay:
       type: object
       properties:
         id:
@@ -553,43 +573,17 @@ components:
           format: uuid
           readOnly: true
         user:
-          $ref: '#/components/schemas/UserCrushDisplay'
+          $ref: '#/components/schemas/UserMatchDisplay'
         match:
           type: boolean
       required:
       - id
       - user
-    Email:
+    PaginatedUserMatchDisplayList:
       type: object
-      properties:
-        email:
-          type: string
-          format: email
       required:
-      - email
-    GenderEnum:
-      enum:
-      - M
-      - W
-      - N
-      type: string
-      description: |-
-        * `M` - Homem
-        * `W` - Mulher
-        * `N` - Não-binário
-    JWT:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-          writeOnly: true
-      required:
-      - email
-      - password
-    PaginatedUserCrushDisplayList:
-      type: object
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -607,9 +601,12 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/UserCrushDisplay'
+            $ref: '#/components/schemas/UserMatchDisplay'
     PaginatedUserPhotoList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -663,10 +660,6 @@ components:
           maxLength: 150
         description:
           type: string
-        gender:
-          $ref: '#/components/schemas/GenderEnum'
-        preference:
-          $ref: '#/components/schemas/PreferenceEnum'
         full_name:
           type: string
           readOnly: true
@@ -705,16 +698,6 @@ components:
           readOnly: true
         is_favorite:
           type: boolean
-    PreferenceEnum:
-      enum:
-      - M
-      - W
-      - A
-      type: string
-      description: |-
-        * `M` - Homem
-        * `W` - Mulher
-        * `A` - Todos
     ResetToken:
       type: object
       properties:
@@ -757,10 +740,6 @@ components:
           maxLength: 150
         description:
           type: string
-        gender:
-          $ref: '#/components/schemas/GenderEnum'
-        preference:
-          $ref: '#/components/schemas/PreferenceEnum'
         full_name:
           type: string
           readOnly: true
@@ -793,7 +772,7 @@ components:
       required:
       - new_password
       - password
-    UserCrushDisplay:
+    UserMatchDisplay:
       type: object
       properties:
         id:
@@ -804,14 +783,11 @@ components:
           type: string
         age:
           type: integer
-        gender:
-          $ref: '#/components/schemas/GenderEnum'
         description:
           type: string
       required:
       - age
       - full_name
-      - gender
       - id
     UserPhoto:
       type: object
@@ -851,17 +827,11 @@ components:
         last_name:
           type: string
           default: ''
-        gender:
-          $ref: '#/components/schemas/GenderEnum'
-        preference:
-          $ref: '#/components/schemas/PreferenceEnum'
       required:
       - birthday
       - email
       - first_name
-      - gender
       - password
-      - preference
   securitySchemes:
     jwtAuth:
       type: http

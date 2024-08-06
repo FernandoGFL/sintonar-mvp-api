@@ -11,71 +11,52 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from sintonar.apps.authentication.models import User, UserPhoto
-from sintonar.apps.crush.models.crush import Crush
-from sintonar.apps.crush.serializers.crush import (
-    CrushCreateSerializer,
-    CrushDisplaySerializer,
-    UserCrushDisplaySerializer,
+from sintonar.apps.match.models.match import Match
+from sintonar.apps.match.serializers.match import (
+    MatchCreateSerializer,
+    MatchDisplaySerializer,
+    UserMatchDisplaySerializer,
 )
 
 
-class UserCrushViewSet(GenericViewSet,
-                       ListAPIView,
-                       ListModelMixin):
+class UserMatchViewSet(GenericViewSet, ListAPIView, ListModelMixin):
     queryset = User.objects.all()
-    serializer_class = UserCrushDisplaySerializer
+    serializer_class = UserMatchDisplaySerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        users_with_photos = UserPhoto.objects.values_list('user_id').distinct()
+        users_with_photos = UserPhoto.objects.values_list("user_id").distinct()
 
         query = Q(
             is_confirmed=True,
             id__in=users_with_photos,
         )
 
-        preference = self.request.user.preference
-        gender = self.request.user.gender
-
-        if preference == User.WOMAN:
-            query &= Q(gender=User.WOMAN) | Q(gender=User.NEUTRAL)
-
-        elif preference == User.MAN:
-            query &= Q(gender=User.MAN) | Q(gender=User.NEUTRAL)
-
-        if gender == User.MAN:
-            query &= Q(preference=User.MAN) | Q(preference=User.ALL)
-
-        elif gender == User.WOMAN:
-            query &= Q(preference=User.WOMAN) | Q(preference=User.ALL)
-
-        crushs = Crush.objects.filter(
+        matchs = Match.objects.filter(
             user_from=self.request.user,
-        ).values_list('user_to')
+        ).values_list("user_to")
 
-        return queryset.filter(
-            query
-        ).exclude(
-            id=self.request.user.id
-        ).exclude(
-            id__in=crushs
-        ).order_by('date_joined')
+        return (
+            queryset.filter(query)
+            .exclude(id=self.request.user.id)
+            .exclude(id__in=matchs)
+            .order_by("date_joined")
+        )
 
 
-class CrushViewSet(GenericViewSet,
-                   ListModelMixin,
-                   CreateModelMixin,
-                   RetrieveModelMixin):
-    queryset = Crush.objects.all()
-    serializer_class = CrushCreateSerializer
+class MatchViewSet(
+    GenericViewSet, ListModelMixin, CreateModelMixin, RetrieveModelMixin
+):
+    queryset = Match.objects.all()
+    serializer_class = MatchCreateSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = None
 
     def get_serializer_class(self):
-        if self.action in ('list', 'retrieve'):
-            return CrushDisplaySerializer
+        if self.action in ("list", "retrieve"):
+            return MatchDisplaySerializer
 
         return self.serializer_class
 
@@ -83,16 +64,19 @@ class CrushViewSet(GenericViewSet,
         queryset = super().get_queryset()
         query_params = self.request.query_params
 
-        users_with_photos = UserPhoto.objects.values_list('user_id').distinct()
+        users_with_photos = UserPhoto.objects.values_list("user_id").distinct()
 
         query = Q(
-            kiss=True,
+            like=True,
             user_to=self.request.user,
             user_from__id__in=users_with_photos,
         )
 
-        if self.action == 'list':
-            matched = query_params.get('matched', 'false') in ('true', 'True',)
+        if self.action == "list":
+            matched = query_params.get("matched", "false") in (
+                "true",
+                "True",
+            )
 
             if matched:
                 query &= Q(match=True)
@@ -101,39 +85,41 @@ class CrushViewSet(GenericViewSet,
 
         return queryset.filter(
             query,
-        ).order_by('-created_at')
+        ).order_by("-created_at")
 
     def create(self, request, *args, **kwargs):
         if not UserPhoto.objects.filter(user=request.user).exists():
             raise ValidationError(
                 detail={
-                    'detail': _('You need to upload at least one photo to send a crush.')
+                    "detail": _("You need to upload at least one photo to send a like.")
                 }
             )
 
         data = dict(**request.data)
-        data['user_from'] = request.user.id
+        data["user_from"] = request.user.id
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                name='matched',
+                name="matched",
                 type=OpenApiTypes.BOOL,
                 location=OpenApiParameter.QUERY,
-                description='Filter by matched crushs.',
+                description="Filter by matched users.",
                 examples=[
                     OpenApiExample(
-                        name='Matched',
-                        summary='If you want to filter by matched crushs.',
-                        value='true',
+                        name="Matched",
+                        summary="If you want to filter by matched users.",
+                        value="true",
                     )
-                ]
+                ],
             ),
         ],
     )
