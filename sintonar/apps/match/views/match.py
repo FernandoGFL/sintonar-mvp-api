@@ -61,6 +61,19 @@ class UserMatchViewSet(GenericViewSet, ListAPIView, ListModelMixin):
             .order_by("date_joined")
         )
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="interest",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="The interest id you want to filter by.",
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class MatchViewSet(
     GenericViewSet, ListModelMixin, CreateModelMixin, RetrieveModelMixin
