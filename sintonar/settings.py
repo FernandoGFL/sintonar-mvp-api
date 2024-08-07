@@ -207,8 +207,8 @@ AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": "max-age=86400",
 }
 
-# DEFAULT_FILE_STORAGE = 'sintonar.storage_backends.MediaStorage'
-# PRIVATE_FILE_STORAGE = 'sintonar.storage_backends.PrivateMediaStorage'
+DEFAULT_FILE_STORAGE = "sintonar.storage_backends.MediaStorage"
+PRIVATE_FILE_STORAGE = "sintonar.storage_backends.PrivateMediaStorage"
 
 SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
@@ -227,13 +227,13 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "America/Fortaleza"
 
 
-# DBBACKUP_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-# DBBACKUP_STORAGE_OPTIONS = {
-#     "access_key": AWS_ACCESS_KEY_ID,
-#     "secret_key": AWS_SECRET_ACCESS_KEY,
-#     "bucket_name": AWS_STORAGE_BUCKET_NAME,
-#     "default_acl": "private",
-# }
+DBBACKUP_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+DBBACKUP_STORAGE_OPTIONS = {
+    "access_key": AWS_ACCESS_KEY_ID,
+    "secret_key": AWS_SECRET_ACCESS_KEY,
+    "bucket_name": AWS_STORAGE_BUCKET_NAME,
+    "default_acl": "private",
+}
 
 
 SPECTACULAR_SETTINGS = {
